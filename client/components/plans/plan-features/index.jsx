@@ -12,7 +12,8 @@ var PlanHeader = require( 'components/plans/plan-header' ),
 	PlanFeatureCell = require( 'components/plans/plan-feature-cell' ),
 	PlanActions = require( 'components/plans/plan-actions' ),
 	PlanPrice = require( 'components/plans/plan-price' ),
-	PlanDiscountMessage = require( 'components/plans/plan-discount-message' );
+	PlanDiscountMessage = require( 'components/plans/plan-discount-message' ),
+	Gridicon = require( 'components/gridicon' );
 
 module.exports = React.createClass( {
 	displayName: 'PlanFeatures',
@@ -20,7 +21,7 @@ module.exports = React.createClass( {
 	featureIncludedString: function( feature ) {
 		var included = feature[ this.props.plan.product_id ];
 		if ( 'boolean' === typeof included && included ) {
-			return ( <span className="plan-features__included no-text"></span> );
+			return ( <Gridicon icon="checkmark-circle" size={ 24 } /> );
 		}
 		if ( 'string' === typeof included ) {
 			return ( <span className="plan-features__included">{ included }</span> );
@@ -29,13 +30,7 @@ module.exports = React.createClass( {
 	},
 
 	headerText: function() {
-		return (
-			<span className="header-text">
-				WordPress.com
-				<br />
-				{ this.props.plan.product_name_short }
-			</span>
-		);
+		return <span className="header-text">{ this.props.plan.product_name_short }</span>;
 	},
 
 	render: function() {
@@ -56,12 +51,13 @@ module.exports = React.createClass( {
 
 		return (
 			<div key={ this.props.plan.product_id } className={ classes }>
-				<PlanHeader text={ this.headerText() } />
+				<PlanHeader text={ this.headerText() }>
+					<PlanPrice
+						plan={ this.props.plan }
+						sitePlan={ sitePlan }
+						site={ this.props.site } />
+				</PlanHeader>
 				{ features }
-				<PlanPrice
-					plan={ this.props.plan }
-					sitePlan={ sitePlan }
-					site={ this.props.site } />
 				<PlanActions
 					enableFreeTrials={ this.props.enableFreeTrials }
 					onSelectPlan={ this.props.onSelectPlan }
