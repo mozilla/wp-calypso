@@ -25,7 +25,7 @@ const ListItem = React.createClass( {
 
 					<div className="domain-management-list-item__meta">
 						<span className="domain-management-list-item__type">{ this.getDomainTypeText() }</span>
-						{ this.isDomainExpired( this.props.domain ) }
+						{ this.props.domain.type !== 'WPCOM' ? this.isDomainExpired( this.props.domain ) : null }
 						<DomainPrimaryFlag domain={ this.props.domain } />
 					</div>
 				</div>
@@ -34,31 +34,43 @@ const ListItem = React.createClass( {
 	},
 
 	isDomainExpired( domain ) {
-		if ( domain.type === "WPCOM" ) {
-			return null;
-		}
+		var expirationTime = domain.expirationMoment.startOf( 'day' ).diff( this.moment().startOf( 'day' ), 'days' );
 
 		if ( domain.expired ) {
+			if ( expirationTime === 0 || -1 || 1 ) {
+				return (
+					<Notice isCompact status="is-error" icon="spam">
+						{ this.translate( 'Expired a day ago' ) }
+					</Notice>
+				);
+			}
+
 			return (
 				<Notice isCompact status="is-error" icon="spam">
-					{ this.translate( 'Expired %(timeSinceExpiry)s', {
+					{ this.translate( 'Expired %(timeSinceExpiry)s days ago', {
 						args: {
-							timeSinceExpiry: domain.expirationMoment.fromNow()
+							timeSinceExpiry: -( expirationTime )
 						},
-						context: 'timeSinceExpiry is of the form "[number] [time-period] ago" i.e. "3 days ago"'
 					} ) }
 				</Notice>
 			);
 		}
 
-		if ( domain.expirationMoment < this.moment().add( 30, 'days' ) ) {
+		if ( expirationTime < 30 ) {
+			if ( expirationTime === 0 || 1 ) {
+				return (
+					<Notice isCompact status="is-error" icon="spam">
+						{ this.translate( 'Expires today' ) }
+					</Notice>
+				);
+			}
+
 			return (
 				<Notice isCompact status="is-error" icon="spam">
-					{ this.translate( 'Expires %(timeUntilExpiry)s', {
+					{ this.translate( 'Expires in %(timeUntilExpiry)s days', {
 						args: {
-							timeUntilExpiry: domain.expirationMoment.fromNow()
+							timeUntilExpiry: expirationTime
 						},
-						context: 'timeUntilExpiry is of the form "in [number] [time-period]" i.e. "in 2 days"'
 					} ) }
 				</Notice>
 			);
