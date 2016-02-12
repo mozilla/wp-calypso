@@ -19,10 +19,10 @@ import NavTabs from 'components/section-nav/tabs';
 import NavItem from 'components/section-nav/item';
 import Card from 'components/card';
 import { purchase, customize, activate, signup } from 'state/themes/actions';
-import { getThemeById } from 'state/themes/themes/selectors';
 import { getSelectedSite } from 'state/ui/selectors';
 import ThemeHelpers from 'my-sites/themes/helpers';
 import i18n from 'lib/mixins/i18n';
+import { getThemeDetails } from 'state/themes/theme-details/selectors';
 
 export const ThemeSheet = React.createClass( {
 	displayName: 'ThemeSheet',
@@ -85,8 +85,8 @@ Kitsch four loko deep v, tousled kombucha polaroid gentrify. Kitsch bushwick mix
 		return (
 			<Main className="themes__sheet">
 				<div className="themes__sheet-bar">
-					<span className="themes__sheet-bar-title">Pineapple Fifteen</span>
-					<span className="themes__sheet-bar-tag">by Alpha and Omega</span>
+					<span className="themes__sheet-bar-title">{ this.props.theme.name }</span>
+					<span className="themes__sheet-bar-tag">by { this.props.theme.author }</span>
 				</div>
 				<div className="themes__sheet-columns">
 					<div className="themes__sheet-column-left">
@@ -124,8 +124,8 @@ export default connect(
 	( state, props ) => Object.assign( {},
 		props,
 		{
-			theme: getThemeById( state, props.themeSlug ),
 			selectedSite: getSelectedSite( state ) || false,
+			theme: getThemeDetails( state, props.themeSlug ),
 		}
 	)
 )( ThemeSheet );

@@ -19,7 +19,9 @@ var config = require( 'config' ),
 	render = require( 'render' ).render,
 	i18n = require( 'lib/mixins/i18n' ),
 	createReduxStore = require( 'state' ).createReduxStore,
-	setSection = require( 'state/ui/actions' ).setSection;
+	setSection = require( 'state/ui/actions' ).setSection,
+	wpcom = require( 'lib/wp' ),
+	ActionTypes = require( 'state/themes/action-types' );
 
 var HASH_LENGTH = 10,
 	URL_BASE_PATH = '/calypso',
@@ -383,16 +385,31 @@ module.exports = function() {
 				const store = createReduxStore();
 
 				store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
-				context.initialReduxState = pick( store.getState(), 'ui' );
 
-				Object.assign( context, render( (
-					<ReduxProvider store={ store }>
-						<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
-					</ReduxProvider>
-				) ) );
+				wpcom.undocumented().themeDetails( req.params.theme_slug, ( error, data ) => {
+					if ( error ) {
+						console.log( error );
+					} else {
+						store.dispatch( {
+							type: ActionTypes.RECEIVE_THEME_DETAILS,
+							themeId: data.id,
+							themeName: data.name,
+							themeAuthor: data.author
+						} );
+
+						context.initialReduxState = pick( store.getState(), 'ui', 'themes' );
+
+						Object.assign( context, render( (
+								<ReduxProvider store={ store }>
+								<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
+								</ReduxProvider>
+						) ) );
+					}
+					res.render( 'index.jade', context );
+				} );
+			} else {
+				res.render( 'index.jade', context );
 			}
-
-			res.render( 'index.jade', context );
 		} );
 	}
 
