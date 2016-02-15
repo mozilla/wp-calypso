@@ -17,5 +17,6 @@ export const config = {
 
 export function getLocalForage() {
 	localforage.config( config );
+	window.localforage = localforage;
 	return localforage;
 }
