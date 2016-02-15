@@ -36,7 +36,8 @@ var staticFiles = [
 	{ path: 'style-rtl.css' }
 ];
 
-var chunksByPath = {};
+var chunksByPath = {},
+	themeDetails = new Map();
 
 sections.forEach( function( section ) {
 	section.paths.forEach( function( path ) {
@@ -376,40 +377,39 @@ module.exports = function() {
 	} );
 
 	if ( config.isEnabled( 'manage/themes/details' ) ) {
-
 		app.get( '/themes/:theme_slug', function( req, res ) {
 			const context = getDefaultContext( req );
-
 			if ( config.isEnabled( 'server-side-rendering' ) ) {
 				i18n.initialize();
-				const store = createReduxStore();
+				let themeData = themeDetails.get( req.params.theme_slug );
+				if ( ! themeData ) {
+					wpcom.undocumented().themeDetails( req.params.theme_slug, ( error, data ) => {
+						if ( error ) {
+							console.log( 'Error fetching theme details: ', error );
+						} else {
+							themeDetails.set( req.params.theme_slug, data );
+						}
+					} );
+				} else {
+					const store = createReduxStore();
+					store.dispatch( {
+						type: ActionTypes.RECEIVE_THEME_DETAILS,
+						themeId: themeData.id,
+						themeName: themeData.name,
+						themeAuthor: themeData.author
+					} );
 
-				store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
+					store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
+					context.initialReduxState = pick( store.getState(), 'ui', 'themes' );
 
-				wpcom.undocumented().themeDetails( req.params.theme_slug, ( error, data ) => {
-					if ( error ) {
-						console.log( error );
-					} else {
-						store.dispatch( {
-							type: ActionTypes.RECEIVE_THEME_DETAILS,
-							themeId: data.id,
-							themeName: data.name,
-							themeAuthor: data.author
-						} );
-
-						context.initialReduxState = pick( store.getState(), 'ui', 'themes' );
-
-						Object.assign( context, render( (
-								<ReduxProvider store={ store }>
-								<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
-								</ReduxProvider>
-						) ) );
-					}
-					res.render( 'index.jade', context );
-				} );
-			} else {
-				res.render( 'index.jade', context );
+					Object.assign( context, render( (
+							<ReduxProvider store={ store }>
+							<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
+							</ReduxProvider>
+					) ) );
+				}
 			}
+			res.render( 'index.jade', context );
 		} );
 	}
 
