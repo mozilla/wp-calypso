@@ -15,8 +15,9 @@ export default ( state = Map(), action ) => {
 			return state
 				.set( action.themeId, Map( {
 					name: action.themeName,
-					author: action.themeAuthor
-				} ) )
+					author: action.themeAuthor,
+					screenshot: action.themeScreenshot,
+				} ) );
 		case DESERIALIZE:
 			return fromJS( state );
 		case SERIALIZE:

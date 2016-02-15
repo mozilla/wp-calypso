@@ -25,6 +25,7 @@ const ThemeDetailsData = React.createClass( {
 		// Connected props
 		name: React.PropTypes.string,
 		author: React.PropTypes.string,
+		screenshot: React.PropTypes.string,
 		fetchThemeDetails: React.PropTypes.func.isRequired
 	},
 

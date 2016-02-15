@@ -30,6 +30,7 @@ export const ThemeSheet = React.createClass( {
 	propTypes: {
 		name: React.PropTypes.string,
 		author: React.PropTypes.string,
+		screenshot: React.PropTypes.string,
 	},
 
 	getDefaultProps() {
@@ -112,7 +113,7 @@ Kitsch four loko deep v, tousled kombucha polaroid gentrify. Kitsch bushwick mix
 					<div className="themes__sheet-column-right">
 						<Card className="themes_sheet-action-bar-spacer"/>
 						<div className="themes__sheet-screenshot">
-							<img className="themes__sheet-img" src="https://i2.wp.com/theme.wordpress.com/wp-content/themes/pub/orvis/screenshot.png?w=680" />
+							<img className="themes__sheet-img" src={ this.props.screenshot + '?=w680' } />
 						</div>
 					</div>
 				</div>

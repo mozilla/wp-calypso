@@ -385,7 +385,7 @@ module.exports = function() {
 				if ( ! themeData ) {
 					wpcom.undocumented().themeDetails( req.params.theme_slug, ( error, data ) => {
 						if ( error ) {
-							console.log( 'Error fetching theme details: ', error );
+							console.log( 'Error fetching theme details: ', error.message || error );
 						} else {
 							themeDetails.set( req.params.theme_slug, data );
 						}
@@ -396,7 +396,8 @@ module.exports = function() {
 						type: ActionTypes.RECEIVE_THEME_DETAILS,
 						themeId: themeData.id,
 						themeName: themeData.name,
-						themeAuthor: themeData.author
+						themeAuthor: themeData.author,
+						themeScreenshot: themeData.screenshot,
 					} );
 
 					store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
