@@ -12,10 +12,11 @@ import { connect } from 'react-redux';
  */
 import MasterbarMinimal from 'layout/masterbar/minimal';
 import ThemesHead from 'my-sites/themes/head';
-import ThemeSheetComponent from 'my-sites/themes/sheet';
+import { ThemeSheet } from 'my-sites/themes/sheet';
+import ThemeDetails from 'components/data/theme-details';
 
 const LayoutLoggedOutDesign = ( { routeName, match, section, hasSidebar, isFullScreen, tier = 'all' } ) => {
-	const primary = routeName === 'themes' ? <ThemeSheetComponent themeSlug={ match.theme_slug } /> : null;
+	const primary = routeName === 'themes' ? <ThemeDetails id={ match.theme_slug }><ThemeSheet /></ThemeDetails> : null;
 	const sectionClass = section ? 'is-section-' + section : '';
 	const classes = classNames( 'wp layout', sectionClass, {
 		'focus-content': true,

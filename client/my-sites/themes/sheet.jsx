@@ -28,7 +28,8 @@ export const ThemeSheet = React.createClass( {
 	displayName: 'ThemeSheet',
 
 	propTypes: {
-		themeSlug: React.PropTypes.string,
+		name: React.PropTypes.string,
+		author: React.PropTypes.string,
 	},
 
 	getDefaultProps() {
@@ -85,8 +86,8 @@ Kitsch four loko deep v, tousled kombucha polaroid gentrify. Kitsch bushwick mix
 		return (
 			<Main className="themes__sheet">
 				<div className="themes__sheet-bar">
-					<span className="themes__sheet-bar-title">{ this.props.theme.name }</span>
-					<span className="themes__sheet-bar-tag">by { this.props.theme.author }</span>
+					<span className="themes__sheet-bar-title">{ this.props.name }</span>
+					<span className="themes__sheet-bar-tag">by { this.props.author }</span>
 				</div>
 				<div className="themes__sheet-columns">
 					<div className="themes__sheet-column-left">
