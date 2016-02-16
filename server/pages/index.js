@@ -379,6 +379,28 @@ module.exports = function() {
 	if ( config.isEnabled( 'manage/themes/details' ) ) {
 		app.get( '/themes/:theme_slug', function( req, res ) {
 			const context = getDefaultContext( req );
+
+			const renderThemeSheet = function( theme ) {
+				const store = createReduxStore();
+				store.dispatch( {
+					type: ActionTypes.RECEIVE_THEME_DETAILS,
+					themeId: theme.id,
+					themeName: theme.name,
+					themeAuthor: theme.author,
+					themeScreenshot: theme.screenshot,
+				} );
+
+				store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
+				context.initialReduxState = pick( store.getState(), 'ui', 'themes' );
+
+				Object.assign( context, render( (
+					<ReduxProvider store={ store }>
+						<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
+					</ReduxProvider>
+				) ) );
+				res.render( 'index.jade', context );
+			};
+
 			if ( config.isEnabled( 'server-side-rendering' ) ) {
 				i18n.initialize();
 				let themeData = themeDetails.get( req.params.theme_slug );
@@ -388,29 +410,15 @@ module.exports = function() {
 							console.log( 'Error fetching theme details: ', error.message || error );
 						} else {
 							themeDetails.set( req.params.theme_slug, data );
+							renderThemeSheet( data );
 						}
 					} );
 				} else {
-					const store = createReduxStore();
-					store.dispatch( {
-						type: ActionTypes.RECEIVE_THEME_DETAILS,
-						themeId: themeData.id,
-						themeName: themeData.name,
-						themeAuthor: themeData.author,
-						themeScreenshot: themeData.screenshot,
-					} );
-
-					store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
-					context.initialReduxState = pick( store.getState(), 'ui', 'themes' );
-
-					Object.assign( context, render( (
-							<ReduxProvider store={ store }>
-							<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
-							</ReduxProvider>
-					) ) );
+					renderThemeSheet( themeData );
 				}
+			} else {
+				res.render( 'index.jade', context );
 			}
-			res.render( 'index.jade', context );
 		} );
 	}
 
