@@ -23,12 +23,14 @@ describe( 'reducer', () => {
 			type: RECEIVE_THEME_DETAILS,
 			themeId: 'mood',
 			themeName: 'Mood',
-			themeAuthor: 'Automattic'
+			themeAuthor: 'Automattic',
+			themeScreenshot: 'mood.jpg',
 		} );
 
 		expect( state.get( 'mood' ).toJS() ).to.eql( {
 			name: 'Mood',
-			author: 'Automattic'
+			author: 'Automattic',
+			screenshot: 'mood.jpg',
 		} );
 	} );
 
