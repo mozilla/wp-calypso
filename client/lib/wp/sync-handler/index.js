@@ -200,8 +200,6 @@ export class SyncHandler {
 	 */
 	storeRecord( key, data ) {
 		debug( 'storing data in %o key\n', key );
-
-		// add this record to history
 		return cache
 			.addItem( key )
 			.then( localforage.setItem( key, data ) );
@@ -209,8 +207,6 @@ export class SyncHandler {
 
 	removeRecord( key ) {
 		debug( 'removing %o key\n', key );
-
-		// add this record to history
 		return cache
 			.removeItem( key )
 			.then( localforage.removeItem( key ) );
