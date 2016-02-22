@@ -65,7 +65,7 @@ const LoggedInHead = ( { children, context: { params: { tier, site_id: siteID } 
 function makeElement( Component, getProps, Head, sideEffects = function() {} ) {
 	// How do we handle the dispatch?
 	return ( context, next ) => {
-		context.secondary = <ReduxProvider store={ context.store }>
+		context.primary = <ReduxProvider store={ context.store }>
 			<Head context={ context }>
 				<Component { ...getProps( context ) } />
 				<ClientSideEffects>
