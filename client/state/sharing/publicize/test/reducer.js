@@ -3,6 +3,7 @@
  */
 import { expect } from 'chai';
 import sinon from 'sinon';
+import deepFreeze from 'deep-freeze';
 
 /**
  * Internal dependencies
@@ -49,7 +50,7 @@ describe( '#fetchingConnections()', () => {
 
 	describe( 'persistence', () => {
 		it( 'never loads persisted data', () => {
-			const persistedState = Object.freeze( {
+			const persistedState = deepFreeze( {
 				2916284: false,
 				123456: undefined
 			} );
@@ -60,7 +61,7 @@ describe( '#fetchingConnections()', () => {
 		} );
 
 		it( 'never persists data', () => {
-			const state = Object.freeze( {
+			const state = deepFreeze( {
 				2916284: false,
 				123456: undefined
 			} );
@@ -130,7 +131,7 @@ describe( '#connections()', () => {
 		} );
 
 		it( 'should persist data', () => {
-			const state = Object.freeze( {
+			const state = deepFreeze( {
 				1: { ID: 1, site_ID: 2916284 },
 				2: { ID: 2, site_ID: 2916284 }
 			} );
@@ -139,7 +140,7 @@ describe( '#connections()', () => {
 		} );
 
 		it( 'should load valid data', () => {
-			const persistedState = Object.freeze( {
+			const persistedState = deepFreeze( {
 				1: { ID: 1, site_ID: 2916284 },
 				2: { ID: 2, site_ID: 2916284 }
 			} );
@@ -150,7 +151,7 @@ describe( '#connections()', () => {
 		} );
 
 		it( 'should ignore loading data with invalid keys', () => {
-			const persistedState = Object.freeze( {
+			const persistedState = deepFreeze( {
 				foo: { ID: 1, site_ID: 2916284 },
 				bar: { ID: 2, site_ID: 2916284 }
 			} );
@@ -161,7 +162,7 @@ describe( '#connections()', () => {
 		} );
 
 		it( 'should ignore loading data with invalid values', () => {
-			const persistedState = Object.freeze( {
+			const persistedState = deepFreeze( {
 				1: { ID: 1, site_ID: 'foo' },
 				2: { ID: 2, site_ID: 2916284 }
 			} );
