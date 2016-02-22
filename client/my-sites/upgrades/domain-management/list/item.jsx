@@ -34,43 +34,28 @@ const ListItem = React.createClass( {
 	},
 
 	isDomainExpired( domain ) {
-		var expirationTime = domain.expirationMoment.startOf( 'day' ).diff( this.moment().startOf( 'day' ), 'days' );
+		var domainExpirationDate = domain.expirationMoment.utc().startOf( 'day' );
 
 		if ( domain.expired ) {
-			if ( expirationTime === 0 || -1 || 1 ) {
-				return (
-					<Notice isCompact status="is-error" icon="spam">
-						{ this.translate( 'Expired a day ago' ) }
-					</Notice>
-				);
-			}
-
 			return (
 				<Notice isCompact status="is-error" icon="spam">
-					{ this.translate( 'Expired %(timeSinceExpiry)s days ago', {
+					{ this.translate( 'Expired %(timeSinceExpiry)s', {
 						args: {
-							timeSinceExpiry: -( expirationTime )
+							timeSinceExpiry: domainExpirationDate.fromNow()
 						},
 					} ) }
 				</Notice>
 			);
 		}
 
-		if ( expirationTime < 30 ) {
-			if ( expirationTime === 0 || 1 ) {
-				return (
-					<Notice isCompact status="is-error" icon="spam">
-						{ this.translate( 'Expires today' ) }
-					</Notice>
-				);
-			}
-
+		if ( domainExpirationDate < this.moment().add( 30, 'days' ) ) {
 			return (
 				<Notice isCompact status="is-error" icon="spam">
-					{ this.translate( 'Expires in %(timeUntilExpiry)s days', {
+					{ this.translate( 'Expires %(timeUntilExpiry)s', {
 						args: {
-							timeUntilExpiry: expirationTime
+							timeUntilExpiry: domainExpirationDate.fromNow()
 						},
+						context: 'timeUntilExpiry is of the form "[number] [time-period] ago" i.e. "3 days ago"'
 					} ) }
 				</Notice>
 			);
