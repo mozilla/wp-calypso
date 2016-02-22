@@ -377,48 +377,56 @@ module.exports = function() {
 	} );
 
 	if ( config.isEnabled( 'manage/themes/details' ) ) {
+		function updateRenderCache( themeSlug ) {
+			let themeData = themeDetails.get( themeSlug );
+			wpcom.undocumented().themeDetails( themeSlug, ( error, data ) => {
+				if ( error ) {
+					console.log( `Error fetching theme ${ themeSlug } details: `, error.message || error );
+				} else if ( ! themeDetails.has( themeSlug ) || ( Date( data.date_updated ) > Date( themeData.date_updated ) ) ) {
+					console.log( 'caching', themeSlug );
+					themeDetails.set( themeSlug, data );
+					renderThemeSheet( data );
+				}
+			} );
+		}
+
+		function renderThemeSheet( theme ) {
+			const context = {};
+			const store = createReduxStore();
+			store.dispatch( {
+				type: ActionTypes.RECEIVE_THEME_DETAILS,
+				themeId: theme.id,
+				themeName: theme.name,
+				themeAuthor: theme.author,
+				themeScreenshot: theme.screenshot,
+			} );
+
+			store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
+			context.initialReduxState = pick( store.getState(), 'ui', 'themes' );
+
+			Object.assign( context, render( (
+				<ReduxProvider store={ store }>
+					<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: theme.id } } />
+				</ReduxProvider>
+			) ) ); // FIXME(ehg): we probably want to get rid of memoize, and use a straight up cache in the render module
+
+			return context;
+		};
+
 		app.get( '/themes/:theme_slug', function( req, res ) {
 			const context = getDefaultContext( req );
-
-			const renderThemeSheet = function( theme ) {
-				const store = createReduxStore();
-				store.dispatch( {
-					type: ActionTypes.RECEIVE_THEME_DETAILS,
-					themeId: theme.id,
-					themeName: theme.name,
-					themeAuthor: theme.author,
-					themeScreenshot: theme.screenshot,
-				} );
-
-				store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
-				context.initialReduxState = pick( store.getState(), 'ui', 'themes' );
-
-				Object.assign( context, render( (
-					<ReduxProvider store={ store }>
-						<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
-					</ReduxProvider>
-				) ) );
-				res.render( 'index.jade', context );
-			};
-
 			if ( config.isEnabled( 'server-side-rendering' ) ) {
-				i18n.initialize();
-				let themeData = themeDetails.get( req.params.theme_slug );
-				if ( ! themeData ) {
-					wpcom.undocumented().themeDetails( req.params.theme_slug, ( error, data ) => {
-						if ( error ) {
-							console.log( 'Error fetching theme details: ', error.message || error );
-						} else {
-							themeDetails.set( req.params.theme_slug, data );
-							renderThemeSheet( data );
-						}
-					} );
-				} else {
-					renderThemeSheet( themeData );
+				const theme = themeDetails.get( req.params.theme_slug );
+				if ( theme ) {
+					Object.assign( context, renderThemeSheet( theme ) );
+					console.log( 'found theme!', theme.id );
 				}
-			} else {
-				res.render( 'index.jade', context );
+
+				i18n.initialize();
+				req.params.theme_slug && updateRenderCache( req.params.theme_slug ); // TODO(ehg): We don't want to hit the endpoint for every req. Debounce based on theme arg?
 			}
+
+			res.render( 'index.jade', context );
 		} );
 	}
 
