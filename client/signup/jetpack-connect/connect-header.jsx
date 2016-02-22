@@ -19,7 +19,7 @@ export default React.createClass( {
 
 	renderJetpackLogo() {
 		return (
-			<img src="/calypso/images/jetpack/jetpack-manage.svg" width={ 150 } height={ 150 } />
+			<img className="jetpack-logo" src="/calypso/images/jetpack/jetpack-manage.svg" width={ 150 } height={ 150 } />
 		);
 	},
 

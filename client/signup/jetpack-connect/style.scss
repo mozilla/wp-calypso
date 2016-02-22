@@ -9,8 +9,22 @@
 .jetpack-connect__header-container {
 	text-align: center;
 
+	.jetpack-logo {
+		width: 150px;
+		height: 150px;
+	}
+
 	.step-header {
 		margin-bottom: 16px;
+	}
+}
+
+.jetpack-connect__wp-admin-dialog.dialog.card {
+	max-width: 400px;
+
+	.jetpack-connect__install-wp-admin {
+		width: 400px;
+		height: 294px;
 	}
 }
 
@@ -21,7 +35,7 @@
 
 		.gridicon {
 			position: absolute;
-			top: 34px;
+			top: 8px;
 			left: 8px;
 			color: lighten( $gray, 20% );
 		}
