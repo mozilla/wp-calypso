@@ -25,13 +25,11 @@ import { purchase, customize, activate, signup } from 'state/themes/actions';
 import { getSelectedSite } from 'state/ui/selectors';
 import ThemeHelpers from 'my-sites/themes/helpers';
 import i18n from 'lib/mixins/i18n';
-//import { getThemeDetails } from 'state/themes/theme-details/selectors';
 
 export const ThemeSheet = React.createClass( {
 	displayName: 'ThemeSheet',
 
 	propTypes: {
-		themeSlug: React.PropTypes.string,
 		id: React.PropTypes.string,
 		name: React.PropTypes.string,
 		author: React.PropTypes.string,
@@ -62,9 +60,17 @@ export const ThemeSheet = React.createClass( {
 		this.props.dispatch( action );
 	},
 
-	getDangerousElements() {
-		const priceElement = this.props.price ? <span className="themes__sheet-action-bar-cost" dangerouslySetInnerHTML={ { __html: this.props.price } } /> : null;
-		const themeContentElement = <div dangerouslySetInnerHTML={ { __html: this.props.descriptionLong } } />;
+	getContentElement( section ) {
+		return {
+			details: <div dangerouslySetInnerHTML={ { __html: this.props.descriptionLong } } />,
+			documentation: <div dangerouslySetInnerHTML={ { __html: this.props.supportDocumentation } } />,
+			support: <div>Visit the support forum</div>,
+		}[ section ];
+	},
+
+	getDangerousElements( section ) {
+		const priceElement = <span className="themes__sheet-action-bar-cost" dangerouslySetInnerHTML={ { __html: this.props.price } } />;
+		const themeContentElement = this.getContentElement( section );
 		return { priceElement, themeContentElement };
 	},
 
@@ -80,14 +86,14 @@ export const ThemeSheet = React.createClass( {
 			actionTitle = i18n.translate( 'Start with this design' );
 		}
 
-		const section = this.props.contentSection || 'details';
+		const section = this.props.section || 'details';
 		const filterStrings = {
 			details: i18n.translate( 'Details', { context: 'Filter label for theme content' } ),
 			documentation: i18n.translate( 'Documentation', { context: 'Filter label for theme content' } ),
 			support: i18n.translate( 'Support', { context: 'Filter label for theme content' } ),
 		};
 
-		const { themeContentElement, priceElement } = this.getDangerousElements();
+		const { themeContentElement, priceElement } = this.getDangerousElements( section );
 
 		return (
 			<Main className="themes__sheet">
@@ -107,9 +113,9 @@ export const ThemeSheet = React.createClass( {
 						<div className="themes__sheet-content">
 							<SectionNav className="themes__sheet-section-nav" selectedText={ filterStrings[section] }>
 								<NavTabs label="Details" >
-									<NavItem path={ `/themes/${ this.props.themeSlug }/details` } selected={ section === 'details' } >{ i18n.translate( 'Details' ) }</NavItem>
-									<NavItem path={ `/themes/${ this.props.themeSlug }/documentation` } selected={ section === 'documentation' } >{ i18n.translate( 'Documentation' ) }</NavItem>
-									<NavItem path={ `/themes/${ this.props.themeSlug }/support` } selected={ section === 'support' } >{ i18n.translate( 'Support' ) }</NavItem>
+									<NavItem path={ `/themes/${ this.props.id }/details` } selected={ section === 'details' } >{ i18n.translate( 'Details' ) }</NavItem>
+									<NavItem path={ `/themes/${ this.props.id }/documentation` } selected={ section === 'documentation' } >{ i18n.translate( 'Documentation' ) }</NavItem>
+									<NavItem path={ `/themes/${ this.props.id }/support` } selected={ section === 'support' } >{ i18n.translate( 'Support' ) }</NavItem>
 								</NavTabs>
 							</SectionNav>
 							<Card className="themes__sheet-content">{ themeContentElement }</Card>
