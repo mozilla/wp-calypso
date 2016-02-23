@@ -20,8 +20,9 @@ import { getAnalyticsData } from './helpers';
 import { getCurrentUser } from 'state/current-user/selectors';
 import { setSection } from 'state/ui/actions';
 import ClientSideEffects from 'components/client-side-effects';
+import DefaultHead from 'layout/head';
 
-function getProps( context ) {
+function getMultiSiteProps( context ) {
 	const { tier, site_id: siteId } = context.params;
 
 	const { basePath, analyticsPageTitle } = getAnalyticsData(
@@ -29,10 +30,6 @@ function getProps( context ) {
 		tier,
 		siteId
 	);
-
-	const runClientAnalytics = function() {
-		analytics.pageView.record( basePath, analyticsPageTitle );
-	};
 
 	const boundTrackScrollPage = function() {
 		trackScrollPage(
@@ -45,31 +42,46 @@ function getProps( context ) {
 	return {
 		tier,
 		search: context.query.s,
-		trackScrollPage: boundTrackScrollPage,
-		runClientAnalytics
+		trackScrollPage: boundTrackScrollPage
 	};
 };
 
+function runClientAnalytics( context ) {
+	const { tier, site_id: siteId } = context.params;
+	const { basePath, analyticsPageTitle } = getAnalyticsData(
+		context.path,
+		tier,
+		siteId
+	);
+	analytics.pageView.record( basePath, analyticsPageTitle );
+};
+
+function getSingleSiteProps( context ) {
+	const { tier, site_id: siteId } = context.params;
+}
+
 const LoggedInHead = ( { children, context: { params: { tier, site_id: siteID } } } ) => (
-	<Head
+	<DefaultHead
 		title={ buildTitle(
 			i18n.translate( 'Themes', { textOnly: true } ),
 			{ siteID }
 		) }
 		tier={ tier || 'all' }>
 		{ children }
-	</Head>
+	</DefaultHead>
 );
 
 // This is generic -- nothing themes-specific in here!
-function makeElement( Component, getProps, Head, sideEffects = function() {} ) {
-	// How do we handle the dispatch?
+function makeElement( Component, getProps, Head, action = {}, sideEffects = function() {} ) {
 	return ( context, next ) => {
+		const boundSideEffects = sideEffects.bind( null, context );
+		context.store.dispatch( action );
+
 		context.primary = <ReduxProvider store={ context.store }>
 			<Head context={ context }>
 				<Component { ...getProps( context ) } />
 				<ClientSideEffects>
-					{ sideEffects }
+					{ boundSideEffects }
 				</ClientSideEffects>
 			</Head>
 		</ReduxProvider>;
@@ -78,7 +90,18 @@ function makeElement( Component, getProps, Head, sideEffects = function() {} ) {
 };
 
 // Usage:
-// export const singleSite = makeElement( SingleSiteComponent, getThemesProps, LoggedInHead, runClientAnalytics);
+const setDesignSection = setSection( 'design', {
+	hasSidebar: true,
+	isFullScreen: false
+} );
+
+export const singleSite = makeElement(
+	SingleSiteComponent,
+	getSingleSiteProps,
+	LoggedInHead,
+	setDesignSection,
+	runClientAnalytics
+);
 
 export function singleSite( context, next ) {
 	const Head = require( 'layout/head' );
