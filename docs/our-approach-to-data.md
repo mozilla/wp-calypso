@@ -361,7 +361,7 @@ properties they might contain. Ideally, we should try to balance readability and
 
 A simple example schema.js:
 ```javascript
-export default {
+export const itemsSchema = {
 	type: 'object',
 	patternProperties: {
 		'^\\d+$': {
@@ -386,7 +386,10 @@ export default ( state = defaultState, action ) => {
 		case RECEIVE_THEMES:
 		//...
 		case DESERIALIZE:
-			return isValidStateWithSchema( state, schema ) ? fromJS( state ) : defaultState;
+			if ( isValidStateWithSchema( state, itemsSchema ) ) {
+				return state;
+			}
+			return defaultState;
 } );
 ```
 
