@@ -20,6 +20,7 @@ import { getAnalyticsData } from './helpers';
 import { getCurrentUser } from 'state/current-user/selectors';
 import { setSection } from 'state/ui/actions';
 import ClientSideEffects from 'components/client-side-effects';
+import LayoutLoggedOutDesign from 'layout/layout/logged-out-design';
 
 function getProps( context ) {
 	const { tier, site_id: siteId } = context.params;
@@ -132,5 +133,14 @@ export function details( context, next ) {
 
 	context.primary = makeElement( ThemeSheetComponent, Head, context.store, props );
 	context.secondary = null; // When we're logged in, we need to remove the sidebar.
+	next();
+}
+
+export function detailsLayout( context, next ) {
+	const { primary, secondary, tertiary } = context;
+
+	context.layout = <ReduxProvider store={ store }>
+		<LayoutLoggedOutDesign primary={ primary } store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
+	</ReduxProvider>;
 	next();
 }

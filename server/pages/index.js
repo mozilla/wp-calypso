@@ -385,9 +385,11 @@ module.exports = function() {
 				store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
 				context.initialReduxState = pick( store.getState(), 'ui' );
 
+				const primary = <ThemeSheetComponent themeSlug={ req.params.theme_slug } />;
+
 				Object.assign( context, render( (
 					<ReduxProvider store={ store }>
-						<LayoutLoggedOutDesign store={ store } routeName={ 'themes' } match={ { theme_slug: req.params.theme_slug } } />
+						<LayoutLoggedOutDesign primary={ primary } store={ store } routeName={ 'themes' } />
 					</ReduxProvider>
 				) ) );
 			}
