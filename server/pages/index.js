@@ -417,7 +417,7 @@ module.exports = function() {
 			return context;
 		};
 
-		app.get( '/themes/:theme_slug', function( req, res ) {
+		app.get( '/themes/:theme_slug/:section?', function( req, res ) {
 			const context = getDefaultContext( req );
 			if ( config.isEnabled( 'server-side-rendering' ) ) {
 				const theme = themeDetails.get( req.params.theme_slug );
