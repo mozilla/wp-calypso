@@ -1,5 +1,8 @@
 /** @ssr-ready **/
 
+/* eslint-disable react/no-danger  */
+// FIXME!!!^ we want to ensure we have sanitised data…
+
 /**
  * External dependencies
  */
@@ -22,27 +25,21 @@ import { purchase, customize, activate, signup } from 'state/themes/actions';
 import { getSelectedSite } from 'state/ui/selectors';
 import ThemeHelpers from 'my-sites/themes/helpers';
 import i18n from 'lib/mixins/i18n';
-import { getThemeDetails } from 'state/themes/theme-details/selectors';
+//import { getThemeDetails } from 'state/themes/theme-details/selectors';
 
 export const ThemeSheet = React.createClass( {
 	displayName: 'ThemeSheet',
 
 	propTypes: {
+		themeSlug: React.PropTypes.string,
+		id: React.PropTypes.string,
 		name: React.PropTypes.string,
 		author: React.PropTypes.string,
 		screenshot: React.PropTypes.string,
-	},
-
-	getDefaultProps() {
-		return {
-			theme: {
-				price: '$125',
-				description_long: `
-Kitsch four loko deep v, tousled kombucha polaroid gentrify. Kitsch bushwick mixtape, ugh wayfarers artisan YOLO godard direct trade. Post-ironic YOLO helvetica, hammock small batch man bun gastropub ethical forage. Neutra retro swag, chambray polaroid deep v distillery microdosing messenger bag pabst narwhal bitters. Fingerstache retro banh mi mixtape pabst. Tote bag cred everyday carry meh ennui leggings. Austin truffaut marfa, deep v artisan kickstarter fingerstache gentrify typewriter aesthetic meditation pop-up.
-
-				Man braid meditation meggings art party occupy kale chips, raw denim aesthetic pop-up portland cred. Cold-pressed godard authentic beard offal, quinoa butcher photo booth. Literally messenger bag waistcoat cliche taxidermy, austin knausgaard freegan. Seitan master cleanse skateboard, pickled mixtape YOLO before they sold out ugh. Authentic actually ethical fanny pack squid, flannel kale chips YOLO humblebrag polaroid franzen. Pitchfork flannel mumblecore food truck. Craft beer fap 90's, heirloom shabby chic typewriter salvia listicle pabst beard tacos sustainable yuccie.`
-			}
-		};
+		price: React.PropTypes.string,
+		description: React.PropTypes.string,
+		descriptionLong: React.PropTypes.string,
+		supportDocumentation: React.PropTypes.string,
 	},
 
 	onBackClick() {
@@ -52,25 +49,31 @@ Kitsch four loko deep v, tousled kombucha polaroid gentrify. Kitsch bushwick mix
 	onPrimaryClick() {
 		let action;
 
-		if ( ThemeHelpers.isPremium( this.props.theme ) && ! this.props.theme.purchased && this.props.isLoggedIn ) {
-			action = purchase( this.props.theme, this.props.selectedSite, 'showcase-sheet' );
-		} else if ( this.props.theme.active ) {
-			action = customize( this.props.theme, this.props.selectedSite );
+		if ( ThemeHelpers.isPremium( this.props ) && ! this.props.purchased && this.props.isLoggedIn ) { //FIXME: purchased ENOENT
+			action = purchase( this.props, this.props.selectedSite, 'showcase-sheet' );
+		} else if ( this.props.active ) { //FIXME: active ENOENT
+			action = customize( this.props, this.props.selectedSite );
 		} else if ( this.props.isLoggedIn ) {
-			action = activate( this.props.theme, this.props.selectedSite, 'showcase-sheet' );
+			action = activate( this.props, this.props.selectedSite, 'showcase-sheet' );
 		} else {
-			action = signup( this.props.theme );
+			action = signup( this.props );
 		}
 
 		this.props.dispatch( action );
 	},
 
+	getDangerousElements() {
+		const priceElement = this.props.price ? <span className="themes__sheet-action-bar-cost" dangerouslySetInnerHTML={ { __html: this.props.price } } /> : null;
+		const themeContentElement = <div dangerouslySetInnerHTML={ { __html: this.props.descriptionLong } } />;
+		return { priceElement, themeContentElement };
+	},
+
 	render() {
 		let actionTitle;
-		if ( this.props.isLoggedIn && this.props.theme.active ) {
+		if ( this.props.isLoggedIn && this.props.active ) { //FIXME: active ENOENT
 			actionTitle = i18n.translate( 'Customize' );
 		} else if ( this.props.isLoggedIn ) {
-			actionTitle = ThemeHelpers.isPremium( this.props.theme ) && ! this.props.theme.purchased
+			actionTitle = ThemeHelpers.isPremium( this.props ) && ! this.props.purchased //FIXME: purchased ENOENT
 				? i18n.translate( 'Purchase & Activate' )
 				: i18n.translate( 'Activate' );
 		} else {
@@ -84,6 +87,8 @@ Kitsch four loko deep v, tousled kombucha polaroid gentrify. Kitsch bushwick mix
 			support: i18n.translate( 'Support', { context: 'Filter label for theme content' } ),
 		};
 
+		const { themeContentElement, priceElement } = this.getDangerousElements();
+
 		return (
 			<Main className="themes__sheet">
 				<div className="themes__sheet-bar">
@@ -94,7 +99,7 @@ Kitsch four loko deep v, tousled kombucha polaroid gentrify. Kitsch bushwick mix
 					<div className="themes__sheet-column-left">
 						<HeaderCake className="themes__sheet-action-bar" onClick={ this.onBackClick }>
 							<div className="themes__sheet-action-bar-container">
-								<span className="themes__sheet-action-bar-cost">{ this.props.theme.price }</span>
+								{ priceElement }
 								<Button secondary >{ i18n.translate( 'Download' ) }</Button>
 								<Button primary icon onClick={ this.onPrimaryClick }><Gridicon icon="checkmark"/>{ actionTitle }</Button>
 							</div>
@@ -107,7 +112,7 @@ Kitsch four loko deep v, tousled kombucha polaroid gentrify. Kitsch bushwick mix
 									<NavItem path={ `/themes/${ this.props.themeSlug }/support` } selected={ section === 'support' } >{ i18n.translate( 'Support' ) }</NavItem>
 								</NavTabs>
 							</SectionNav>
-							<Card className="themes__sheet-content">{ this.props.theme.description_long }</Card>
+							<Card className="themes__sheet-content">{ themeContentElement }</Card>
 						</div>
 					</div>
 					<div className="themes__sheet-column-right">
@@ -127,7 +132,6 @@ export default connect(
 		props,
 		{
 			selectedSite: getSelectedSite( state ) || false,
-			theme: getThemeDetails( state, props.themeSlug ),
 		}
 	)
 )( ThemeSheet );

@@ -399,6 +399,10 @@ module.exports = function() {
 				themeName: theme.name,
 				themeAuthor: theme.author,
 				themeScreenshot: theme.screenshot,
+				themePrice: theme.price ? theme.price.display : undefined,
+				themeDescription: theme.description,
+				themeDescriptionLong: theme.description_long,
+				themeSupportDocumentation: theme.extended ? theme.extended.support_documentation : undefined,
 			} );
 
 			store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );

@@ -89,7 +89,11 @@ export function fetchThemeDetails( id ) {
 					themeId: data.id,
 					themeName: data.name,
 					themeAuthor: data.author,
+					themePrice: data.price ? data.price.display : undefined,
 					themeScreenshot: data.screenshot,
+					themeDescription: data.description,
+					themeDescriptionLong: data.description_long,
+					themeSupportDocumentation: data.extended ? data.extended.support_documentation : undefined,
 				} );
 			}
 		};

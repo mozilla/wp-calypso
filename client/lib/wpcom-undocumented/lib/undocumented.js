@@ -1474,7 +1474,8 @@ Undocumented.prototype.themeDetails = function( themeId, fn ) {
 	debug( '/themes/:theme_id' );
 	this.wpcom.req.get( {
 		apiVersion: '1.1',
-		path: '/themes/' + themeId
+		path: `/themes/${ themeId }`,
+		extended: true,
 	}, fn );
 };
 

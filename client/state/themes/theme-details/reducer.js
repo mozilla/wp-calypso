@@ -16,7 +16,11 @@ export default ( state = Map(), action ) => {
 				.set( action.themeId, Map( {
 					name: action.themeName,
 					author: action.themeAuthor,
+					price: action.themePrice,
 					screenshot: action.themeScreenshot,
+					description: action.themeDescription,
+					descriptionLong: action.themeDescriptionLong,
+					supportDocumentation: action.themeSupportDocumentation,
 				} ) );
 		case DESERIALIZE:
 		case SERVER_DESERIALIZE:
