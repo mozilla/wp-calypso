@@ -22,6 +22,16 @@ import { setSection } from 'state/ui/actions';
 import ClientSideEffects from 'components/client-side-effects';
 import DefaultHead from 'layout/head';
 
+function runClientAnalytics( context ) {
+	const { tier, site_id: siteId } = context.params;
+	const { basePath, analyticsPageTitle } = getAnalyticsData(
+		context.path,
+		tier,
+		siteId
+	);
+	analytics.pageView.record( basePath, analyticsPageTitle );
+};
+
 function getMultiSiteProps( context ) {
 	const { tier, site_id: siteId } = context.params;
 
@@ -46,18 +56,15 @@ function getMultiSiteProps( context ) {
 	};
 };
 
-function runClientAnalytics( context ) {
-	const { tier, site_id: siteId } = context.params;
-	const { basePath, analyticsPageTitle } = getAnalyticsData(
-		context.path,
-		tier,
-		siteId
-	);
-	analytics.pageView.record( basePath, analyticsPageTitle );
-};
-
 function getSingleSiteProps( context ) {
-	const { tier, site_id: siteId } = context.params;
+	const { site_id: siteId } = context.params;
+
+	const props = getMultiSiteProps( context );
+
+	props.key = siteId;
+	props.siteId = siteId;
+
+	return props;
 }
 
 const LoggedInHead = ( { children, context: { params: { tier, site_id: siteID } } } ) => (
