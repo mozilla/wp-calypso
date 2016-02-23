@@ -136,7 +136,7 @@ export function details( context, next ) {
 	context.primary = (
 		<ReduxProvider store={ context.store } >
 			<Head title={ props.title } isSheet>
-				<ThemeDetailsComponent id={ props.themeSlug } >
+				<ThemeDetailsComponent id={ props.themeSlug } section={ props.contentSection } >
 					<ThemeSheetComponent />
 				</ThemeDetailsComponent>
 			</Head>
