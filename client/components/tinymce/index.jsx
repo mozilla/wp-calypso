@@ -19,6 +19,7 @@ require( 'tinymce/plugins/media/plugin.js' );
 require( 'tinymce/plugins/paste/plugin.js' );
 require( 'tinymce/plugins/tabfocus/plugin.js' );
 require( 'tinymce/plugins/textcolor/plugin.js' );
+require( 'tinymce/plugins/template/plugin.js' );
 
 // TinyMCE plugins copied from .org
 require( './plugins/wptextpattern/plugin.js' );
@@ -100,6 +101,7 @@ const PLUGINS = [
 	'media',
 	'paste',
 	'tabfocus',
+	'template',
 	'textcolor',
 	'wptextpattern',
 	'wpcom',
@@ -174,6 +176,8 @@ module.exports = React.createClass( {
 
 	_pinned: false,
 
+	_default_body_class: null,
+
 	componentWillMount: function() {
 		this._id = 'tinymce-' + _instance;
 		_instance++;
@@ -184,11 +188,32 @@ module.exports = React.createClass( {
 			return;
 		}
 
+		if ( !this._default_body_class ) {
+			this._default_body_class = this._editor.getDoc().querySelector("body").className;
+		}
+
+		console.log("this._default_body_class = ", this._default_body_class);
+
 		this.bindEditorEvents( prevProps );
+
+		if ( this.props.postCategory !== prevProps.postCategory ) {
+			console.log("this.props.postCategory = ", this.props.postCategory);
+			this.updateBodyClass();
+		}
 
 		if ( this.props.mode !== prevProps.mode ) {
 			this.toggleEditor();
 		}
+	},
+
+	updateBodyClass: function() {
+		let postCategory = this.props.postCategory;
+		let categoriesAsClasses = postCategory ? Object.keys(postCategory).map(function(category) {
+			return category.replace(/\s+/g, '-').toLowerCase();
+		}).join(' ') : '';
+		let body = this._editor.getDoc().querySelector("body");
+		body.className = classnames(this._default_body_class, categoriesAsClasses);
+		console.log(body.className);
 	},
 
 	componentDidMount: function() {
@@ -205,7 +230,7 @@ module.exports = React.createClass( {
 
 		this.localize();
 
-		let toolbar1 = [ 'wpcom_add_media', 'formatselect', 'bold', 'italic', 'bullist', 'numlist', 'link', 'blockquote', 'alignleft', 'aligncenter', 'alignright', 'spellchecker', 'wp_more', 'wpcom_advanced' ];
+		let toolbar1 = [ 'template', 'wpcom_add_media', 'formatselect', 'bold', 'italic', 'bullist', 'numlist', 'link', 'blockquote', 'alignleft', 'aligncenter', 'alignright', 'spellchecker', 'wp_more', 'wpcom_advanced' ];
 		if ( config.isEnabled( 'post-editor/contact-form' ) ) {
 			toolbar1.splice( 1, 0, 'wpcom_add_contact_form' );
 		}
@@ -286,7 +311,11 @@ module.exports = React.createClass( {
 			body_class: 'content post-type-post post-status-draft post-format-standard locale-en-us',
 			add_unload_trigger: false,
 
-			setup: setup
+			setup: setup,
+
+			templates: [
+		    {title: 'Intro Section', description: '<h1> followed by <p>', content: '<h1>Main Header</h1><p>I\'n the intro paragraph. I\'n the intro paragraph. I\'n the intro paragraph. I\'n the intro paragraph. I\'n the intro paragraph. I\'n the intro paragraph. I\'n the intro paragraph. I\'n the intro paragraph. I\'n the intro paragraph. </p>'}
+		  ]
 
 		} );
 

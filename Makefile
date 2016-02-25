@@ -164,7 +164,7 @@ build-server: install
 
 build: install build-$(CALYPSO_ENV)
 
-build-css: public/style.css public/style-rtl.css public/style-debug.css public/editor.css
+build-css: public/style.css public/style-rtl.css public/style-debug.css public/editor.css public/temp-foxlight.css
 
 build-development: build-server $(CLIENT_CONFIG_FILE) server/devdocs/search-index.js build-css
 
