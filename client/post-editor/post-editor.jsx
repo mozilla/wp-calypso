@@ -326,6 +326,8 @@ const PostEditor = React.createClass( {
 			'is-pinned': this.state.pinned
 		} );
 
+		// console.log("\n this.refs.editor", this.refs.editor, "\n\n\n");
+
 		return (
 			<div className="post-editor">
 				<div className="post-editor__inner">
@@ -377,7 +379,8 @@ const PostEditor = React.createClass( {
 								onKeyUp={ this.debouncedSaveRawContent }
 								onFocus={ this.onEditorFocus }
 								onTextEditorChange={ this.onEditorContentChange }
-								onTogglePin={ this.onTogglePin } />
+								onTogglePin={ this.onTogglePin }
+								postCategory={ this.state.post ? this.state.post.categories : null } />
 						</div>
 						<EditorWordCount />
 						{ this.iframePreviewEnabled() ?
@@ -549,6 +552,7 @@ const PostEditor = React.createClass( {
 				if ( this.state.isLoadingAutosave ) {
 					this.setState( { isLoadingAutosave: false } );
 				}
+				console.log("this.state.post = ", this.state.post);
 			} );
 		}
 		if ( PostEditStore.isDirty() ) {

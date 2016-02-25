@@ -1,0 +1,19 @@
+h1 {
+  background: yellow;
+}
+
+body.bg-color-be-red {
+  background: Crimson;
+}
+
+body.bg-color-be-blue {
+  background: LightSkyBlue;
+}
+
+body.bg-color-be-red.bg-color-be-blue {
+  background: BlueViolet;
+}
+
+body.bg-color-be-purple h1 {
+  background: lavendar;
+}
