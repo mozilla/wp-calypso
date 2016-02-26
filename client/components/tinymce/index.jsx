@@ -123,7 +123,8 @@ const PLUGINS = [
 const CONTENT_CSS = [
 	window.app.tinymceWpSkin,
 	'//s1.wp.com/wp-includes/css/dashicons.css',
-	window.app.tinymceEditorCss,
+	window.app.tinymceEditorDefaultCss,
+	window.app.tinymceEditorExtendCss,
 	'//s1.wp.com/i/fonts/merriweather/merriweather.css',
 ];
 
