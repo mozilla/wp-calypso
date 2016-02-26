@@ -29,6 +29,7 @@ env-config.sh
 /public/style*.css
 /public/style*.css.map
 /public/editor*.css
+/public/foxlight.css
 /server/devdocs/search-index.js
 /server/bundler/assets-*.json
 
