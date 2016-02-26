@@ -3,29 +3,6 @@ body {
 	margin-bottom: 72px;
 }
 
-p {
-	margin: 0 0 24px 0;
-
-	&:last-child {
-		margin-bottom: 0;
-	}
-}
-
-blockquote,
-q {
-	hyphens: none;
-	quotes: none;
-}
-a:link,
-a:visited {
-	color: $blue-medium;
-}
-a:hover,
-a:active {
-	color: $blue-light;
-	outline: 0;
-}
-
 // Images and captions
 img {
 	max-width: 100%;
@@ -78,10 +55,6 @@ a img {
 }
 
 .wp-caption-dd {
-	background: $gray-light;
-	color: darken( $gray, 20% );
-	font-size: 14px;
-	line-height: 1.7;
 	padding: 16px;
 }
 
@@ -104,56 +77,6 @@ a img {
 	width: 100%;
 }
 
-blockquote {
-	padding: 16px;
-	margin: 8px 0 24px 0;
-	border-left: 2px solid $gray;
-	color: darken( $gray, 20 );
-	background: lighten( $gray, 30 );
-}
-
-caption,
-th,
-td {
-	font-weight: normal;
-	text-align: left;
-}
-table,
-th,
-td {
-	border: 1px solid lighten( $gray, 20 );
-}
-table {
-	border-collapse: separate;
-	border-spacing: 0;
-	border-width: 1px 0 0 1px;
-	margin: 0 0 1.6em;
-	table-layout: fixed; /* Prevents HTML tables from becoming too wide */
-	width: 100%;
-}
-caption,
-th,
-td {
-	font-weight: normal;
-	text-align: left;
-}
-th {
-	border-width: 0 1px 1px 0;
-	font-weight: 700;
-}
-td {
-	border-width: 0 1px 1px 0;
-}
-th, td {
-	padding: 0.4em;
-}
 .mce-item-table, .mce-item-table td, .mce-item-table th, .mce-item-table caption {
-	border: 1px solid lighten( $gray, 20 );
-}
-
-hr {
-	border: 0;
-	height: 1px;
-	margin: 8px 0;
-	background: lighten( $gray, 20 );
+	border: 1px solid lighten( black, 20 );
 }
