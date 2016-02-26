@@ -155,6 +155,9 @@ public/editor.css: node_modules $(SASS_FILES)
 	@$(SASS) assets/stylesheets/editor.scss $@
 	@$(AUTOPREFIXER) $@
 
+public/foxlight.css: 
+	cp $(THIS_DIR)/node_modules/foxlight/dest/css/foxlight.css public/foxlight.css
+
 server/devdocs/search-index.js: $(MD_FILES) $(ALL_DEVDOCS_JS)
 	@$(ALL_DEVDOCS_JS) $(MD_FILES)
 
@@ -164,7 +167,7 @@ build-server: install
 
 build: install build-$(CALYPSO_ENV)
 
-build-css: public/style.css public/style-rtl.css public/style-debug.css public/editor.css
+build-css: public/style.css public/style-rtl.css public/style-debug.css public/editor.css public/foxlight.css
 
 build-development: build-server $(CLIENT_CONFIG_FILE) server/devdocs/search-index.js build-css
 
