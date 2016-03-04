@@ -14,6 +14,7 @@ var observe = require( 'lib/mixins/data-observe' ),
 	nuxData = require( './data.js' ),
 	SidebarNavigation = require( 'my-sites/sidebar-navigation' ),
 	analytics = require( 'analytics' );
+import wpcom from 'lib/wp';
 
 module.exports = React.createClass( {
 	displayName: 'StatsNuxInsights',
@@ -52,7 +53,14 @@ module.exports = React.createClass( {
 
 		return content;
 	},
+	getPost: function() {
+		var postHandle = wpcom.site( 'alicoding.wordpress.com' ).post( '4' );
 
+ 		postHandle.get( ( error, data ) => {
+ 			console.log( error, data );
+ 		 	return data.content;
+ 	} );
+	},
 	render: function() {
 		this.props.insightsList.response = this.state.insightsList;
 		this.props.insightsList.loading = false;
@@ -61,7 +69,7 @@ module.exports = React.createClass( {
 			<div className="stats-nux is-insights">
 				<div className="main main-column" role="main">
 					<SidebarNavigation />
-
+					{this.getPost()}
 					<StatsNavigation section="insights" site={ this.props.site } />
 					<div id="my-stats-content">
 						<h3 className="stats-section-title">{ this.translate( 'Activate Your Stats Page' ) }</h3>
