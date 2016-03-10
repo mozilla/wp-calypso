@@ -1,0 +1,5 @@
+{
+  "name": "Calypso",
+  "description": "Calypso - Wordpress frontend build with react",
+  "image": "heroku/cedar:14"
+}
