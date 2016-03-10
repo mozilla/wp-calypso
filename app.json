@@ -1,0 +1,6 @@
+{
+  "name": "Mattermost Push Proxy",
+  "description": "A server for proxying push notifications to iOS and Android devices from Mattermost",
+  "image": "heroku/go:1.5",
+  "mount_dir": "src/github.com/mattermost/push-proxy"
+}

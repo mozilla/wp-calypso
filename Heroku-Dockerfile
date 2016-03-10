@@ -1,0 +1,37 @@
+FROM heroku/cedar:14
+
+MAINTAINER Mozilla Foundation <cade@mozillafoundation.org>
+
+WORKDIR /app
+
+RUN     apt-get -y update && apt-get -y install \
+          wget \
+          git \
+          python \
+          make \
+          build-essential
+
+ENV NODE_VERSION 4.4.0
+
+RUN     wget https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz && \
+          tar -zxf node-v$NODE_VERSION-linux-x64.tar.gz -C /usr/local && \
+          ln -sf node-v$NODE_VERSION-linux-x64 /usr/local/node && \
+          ln -sf /usr/local/node/bin/npm /usr/local/bin/ && \
+          ln -sf /usr/local/node/bin/node /usr/local/bin/ && \
+          rm node-v$NODE_VERSION-linux-x64.tar.gz
+
+ENV     NODE_PATH /app/server:/app/client
+ENV     NODE_ENV production
+ENV     CALYPSO_ENV production
+
+# Install base npm packages to take advantage of the docker cache
+COPY    ./package.json /app/package.json
+RUN     npm install --production
+
+COPY     . /app
+
+# Build javascript bundles for each environment and change ownership
+RUN     make build && \
+          chown -R nobody /app
+
+USER    nobody
