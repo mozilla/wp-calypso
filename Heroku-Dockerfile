@@ -31,7 +31,8 @@ RUN     npm install --production
 COPY     . /app
 
 # Build javascript bundles for each environment and change ownership
-RUN     make build && \
-          chown -R nobody /app
+RUN     ENABLE_FEATURES=oauth make build
+
+RUN     chown -R nobody /app
 
 USER    nobody
