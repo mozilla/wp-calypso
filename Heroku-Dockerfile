@@ -6,17 +6,13 @@ WORKDIR /app/user
 
 ENV PATH=/app/heroku/node/bin/:/app/user/node_modules/.bin:$PATH \
     NODE_VERSION=4.4.0 \
-    PORT=3000 \
-    NODE_PATH=/app/user/server:/app/user/client
-
+    PORT=3000
 
 RUN mkdir -p /app/heroku/node /app/.profile.d
 
 RUN wget https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz && \
     tar -zxf node-v$NODE_VERSION-linux-x64.tar.gz -C /app/heroku/node --strip-components 1 && \
     rm node-v$NODE_VERSION-linux-x64.tar.gz
-
-RUN chown -R nobody /app/heroku
 
 COPY ./package.json /app/user/package.json
 
@@ -25,6 +21,7 @@ RUN /app/heroku/node/bin/npm install --production
 COPY . /app/user
 
 RUN CALYPSO_ENV=production \
+    NODE_ENV=production \
     ENABLE_FEATURES=oauth \
     make build
 
