@@ -2,37 +2,32 @@ FROM heroku/cedar:14
 
 MAINTAINER Mozilla Foundation <cade@mozillafoundation.org>
 
-WORKDIR /app
+WORKDIR /app/user
 
-RUN     apt-get -y update && apt-get -y install \
-          wget \
-          git \
-          python \
-          make \
-          build-essential
+ENV PATH=/app/heroku/node/bin/:/app/user/node_modules/.bin:$PATH \
+    NODE_VERSION=4.4.0 \
+    PORT=3000 \
+    NODE_PATH=/app/user/server:/app/user/client
 
-ENV NODE_VERSION 4.4.0
 
-RUN     wget https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz && \
-          tar -zxf node-v$NODE_VERSION-linux-x64.tar.gz -C /usr/local && \
-          ln -sf node-v$NODE_VERSION-linux-x64 /usr/local/node && \
-          ln -sf /usr/local/node/bin/npm /usr/local/bin/ && \
-          ln -sf /usr/local/node/bin/node /usr/local/bin/ && \
-          rm node-v$NODE_VERSION-linux-x64.tar.gz
+RUN mkdir -p /app/heroku/node /app/.profile.d
 
-ENV     NODE_PATH /app/server:/app/client
-ENV     NODE_ENV production
-ENV     CALYPSO_ENV production
+RUN wget https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz && \
+    tar -zxf node-v$NODE_VERSION-linux-x64.tar.gz -C /app/heroku/node --strip-components 1 && \
+    rm node-v$NODE_VERSION-linux-x64.tar.gz
 
-# Install base npm packages to take advantage of the docker cache
-COPY    ./package.json /app/package.json
-RUN     npm install --production
+RUN chown -R nobody /app/heroku
 
-COPY     . /app
+COPY ./package.json /app/user/package.json
 
-# Build javascript bundles for each environment and change ownership
-RUN     ENABLE_FEATURES=oauth make build
+RUN /app/heroku/node/bin/npm install --production
 
-RUN     chown -R nobody /app
+COPY . /app/user
 
-USER    nobody
+RUN CALYPSO_ENV=production \
+    ENABLE_FEATURES=oauth \
+    make build
+
+RUN chown -R nobody /app/user
+
+USER nobody

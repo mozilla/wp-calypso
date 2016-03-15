@@ -1,1 +1,1 @@
-web: node /app/build/bundle-production.js
+web: node build/bundle-production.js
