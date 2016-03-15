@@ -6,6 +6,9 @@ WORKDIR /app/user
 
 ENV PATH=/app/heroku/node/bin/:/app/user/node_modules/.bin:$PATH \
     NODE_VERSION=4.4.0 \
+    CALYPSO_ENV=production \
+    NODE_ENV=production \
+    NODE_PATH=/app/user/server:/app/user/client \
     PORT=3000
 
 RUN mkdir -p /app/heroku/node /app/.profile.d
@@ -20,9 +23,7 @@ RUN /app/heroku/node/bin/npm install --production
 
 COPY . /app/user
 
-RUN CALYPSO_ENV=production \
-    ENABLE_FEATURES=oauth \
-    make build
+RUN make build
 
 RUN chown -R nobody /app/user
 
