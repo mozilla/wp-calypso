@@ -1,0 +1,29 @@
+web:
+  build: .
+  dockerfile: Heroku-Dockerfile
+  command: 'bash -c ''node build/bundle-production.js'''
+  working_dir: /app/user
+  environment:
+    PORT: 3000
+  ports:
+    - '3000:3000'
+shell:
+  build: .
+  dockerfile: Heroku-Dockerfile
+  command: bash
+  working_dir: /app/user
+  environment:
+    PORT: 3000
+  ports:
+    - '3000:3000'
+  volumes:
+    - '.:/app/user'
+shell-no-volume:
+  build: .
+  dockerfile: Heroku-Dockerfile
+  command: bash
+  working_dir: /app/user
+  environment:
+    PORT: 3000
+  ports:
+    - '3000:3000'
