@@ -1,8 +1,7 @@
 /**
  * External dependencies
  */
-var React = require( 'react' ),
-	some = require( 'lodash/some' );
+var React = require( 'react' );
 
 /**
  * Internal dependencies
@@ -115,7 +114,7 @@ var PublishMenu = React.createClass( {
 		}
 
 		if ( menuItem.mozCustomPageType ) {
-			link = link + "/?pageType=" + menuItem.name
+			link = link + '/?pageType=' + menuItem.name
 		}
 
 		let preload;
