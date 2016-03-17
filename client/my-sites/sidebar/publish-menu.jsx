@@ -1,15 +1,15 @@
 /**
  * External dependencies
  */
-var React = require( 'react' ),
-	some = require( 'lodash/some' );
+var React = require( 'react' );
 
 /**
  * Internal dependencies
  */
 var SidebarItem = require( 'layout/sidebar/item' ),
-	config = require( 'config' ),
-	postTypesList = require( 'lib/post-types-list' )();
+	config = require( 'config' );
+	// [MozNote] We don't wanna show WP's custom post page, e.g., Testimonials, Portfolio.
+	//           Let's remove code related to postTypesList = require( 'lib/post-types-list' )();
 
 var PublishMenu = React.createClass( {
 
@@ -83,36 +83,6 @@ var PublishMenu = React.createClass( {
 		];
 	},
 
-	getPostTypes: function( site ) {
-		if ( ! site ) {
-			return { postTypes: [] };
-		}
-
-		return { postTypes: postTypesList.get( site.ID ) };
-	},
-
-	getInitialState: function() {
-		return this.getPostTypes( this.props.site );
-	},
-
-	componentDidMount: function() {
-		postTypesList.on( 'change', this.update );
-	},
-
-	componentWillUnmount: function() {
-		postTypesList.off( 'change', this.update );
-	},
-
-	componentWillReceiveProps: function( nextProps ) {
-		if ( this.props.site !== nextProps.site ) {
-			this.setState( this.getPostTypes( nextProps.site ) );
-		}
-	},
-
-	update: function() {
-		this.setState( this.getPostTypes( this.props.site ) );
-	},
-
 	renderMenuItem: function( menuItem ) {
 		var className = this.props.itemLinkClass(
 				menuItem.paths ? menuItem.paths : menuItem.link,
@@ -143,12 +113,16 @@ var PublishMenu = React.createClass( {
 			link = menuItem.link + this.props.siteSuffix;
 		}
 
+		if ( menuItem.mozCustomPageType ) {
+			link = link + '/?pageType=' + menuItem.name
+		}
+
 		let preload;
 
 		if ( menuItem.name === 'post' ) {
 			icon = 'posts';
 			preload = 'posts-pages';
-		} else if ( menuItem.name === 'page' ) {
+		} else if ( menuItem.name === 'page' || menuItem.mozCustomPageType ) {
 			icon = 'pages';
 			preload = 'posts-pages';
 		} else if ( menuItem.name === 'jetpack-portfolio' ) {
@@ -168,38 +142,46 @@ var PublishMenu = React.createClass( {
 				onNavigate={ this.props.onNavigate }
 				icon={ icon }
 				preloadSectionName={ preload }
+				mozCustomPageType={ menuItem.mozCustomPageType }
 			/>
 		);
 	},
 
 	render: function() {
-		var menuItems = this.getDefaultMenuItems( this.props.site ),
-			customMenuItems,
-			customPostTypes;
+		var menuItems = this.getDefaultMenuItems( this.props.site );
+		// [MozNote] These are the all the page templates we have available in mozmaker-template
+		var customPostTypes = [
+			{
+				name: 'three-box-page',
+				label: this.translate( '3-Box Page' )
+			},
+			{
+				name: 'resource-list-page',
+				label: this.translate( 'Resource List Page' )
+			},
+			{
+				name: 'scrolling-guide-page',
+				label: this.translate( 'Scrolling Guide Page' )
+			},
+			{
+				name: 'recurring-event-page',
+				label: this.translate( 'Recurring Event Page' )
+			}
+		];
 
-		customPostTypes = this.state.postTypes.filter( function( type ) {
-			return ! some( menuItems, { name: type.name } );
-		} );
-
-		customMenuItems = customPostTypes.map( function( postType ) {
+		var customMenuItems = customPostTypes.map( function( postType ) {
 			return {
 				name: postType.name,
 				label: postType.labels ? postType.labels.menu_name : postType.label,
-				className: postType.name,
-
-				//If the API endpoint doesn't send the .capabilities property (e.g. because the site's Jetpack
-				//version isn't up-to-date), silently assume we don't have the capability to edit this CPT.
-				capability: ( postType.capabilities || {} ).edit_posts,
-
-				// Dummy - doesn't exist yet, so wpAdminLink will be used
-				config: 'manage/cpts',
-
-				// Required to build the menu item class name. Must be discernible from other
+				className: 'pages ' + postType.name,
+				capability: 'edit_pages',
+				config: 'manage/pages',
+				// [Notes from Calypso] Required to build the menu item class name. Must be discernible from other
 				// items' paths in the same section for item highlighting to work properly.
-				link: '/' + postType.name,
-				buttonLink: '',
-				wpAdminLink: 'edit.php?post_type=' + postType.name,
-				showOnAllMySites: false,
+				link: '/page', // [MozNote] this prevents highlighting from working properly but we can't really fix this problem
+				wpAdminLink: 'edit.php?post_type=page',
+				showOnAllMySites: true,
+				mozCustomPageType: true
 			};
 		} );
 
