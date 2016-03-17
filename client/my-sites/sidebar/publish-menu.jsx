@@ -22,7 +22,12 @@ import QueryPostTypes from 'components/data/query-post-types';
 import analytics from 'lib/analytics';
 import { decodeEntities } from 'lib/formatting';
 
-const PublishMenu = React.createClass( {
+var SidebarItem = require( 'layout/sidebar/item' ),
+	config = require( 'config' );
+	// [MozNote] We don't wanna show WP's custom post page, e.g., Testimonials, Portfolio.
+	//           Let's remove code related to postTypesList = require( 'lib/post-types-list' )();
+
+var PublishMenu = React.createClass( {
 	propTypes: {
 		site: React.PropTypes.oneOfType( [
 			React.PropTypes.object,
@@ -97,9 +102,16 @@ const PublishMenu = React.createClass( {
 		this.props.onNavigate();
 	},
 
-	renderMenuItem( menuItem ) {
-		const { site } = this.props;
-		if ( site.capabilities && ! site.capabilities[ menuItem.capability ] ) {
+	renderMenuItem: function( menuItem ) {
+		var className = this.props.itemLinkClass(
+				menuItem.paths ? menuItem.paths : menuItem.link,
+				menuItem.className
+			),
+			isEnabled = config.isEnabled( menuItem.config ),
+			link,
+			icon;
+
+		if ( this.props.site.capabilities && ! this.props.site.capabilities[ menuItem.capability ] ) {
 			return null;
 		}
 
@@ -125,9 +137,21 @@ const PublishMenu = React.createClass( {
 			link = link + '/?pageType=' + menuItem.name;
 		}
 
+		if ( menuItem.mozCustomPageType ) {
+			link = link + "/?pageType=" + menuItem.name
+		}
+
 		let preload;
 		if ( includes( [ 'post', 'page' ], menuItem.name ) ) {
 			preload = 'posts-pages';
+
+		} else if ( menuItem.name === 'page' || menuItem.mozCustomPageType ) {
+			icon = 'pages';
+			preload = 'posts-pages';
+		} else if ( menuItem.name === 'jetpack-portfolio' ) {
+			icon = 'folder';
+		} else if ( menuItem.name === 'jetpack-testimonial' ) {
+			icon = 'quote';
 		} else {
 			preload = 'posts-custom';
 		}
@@ -156,6 +180,7 @@ const PublishMenu = React.createClass( {
 				onNavigate={ this.onNavigate.bind( this, menuItem.name ) }
 				icon={ icon }
 				preloadSectionName={ preload }
+				mozCustomPageType={ menuItem.mozCustomPageType }
 			/>
 		);
 	},
@@ -185,9 +210,9 @@ const PublishMenu = React.createClass( {
 				wpAdminLink: 'edit.php?post_type=' + postType.name,
 				showOnAllMySites: false,
 				buttonLink
-			};
-		} );
-	},
+      };
+    } );
+  },
 
 	getMozmakerPartialTypes( callback ) {
 		let defaultType = [ 'blank' ];
