@@ -45,6 +45,34 @@ export default React.createClass( {
 		);
 	},
 
+	renderDefaultItem(isExternalLink) {
+		return (
+			<a
+				onClick={ this.props.onNavigate }
+				href={ this.props.link }
+				target={ isExternalLink ? '_blank' : null }
+				onMouseEnter={ this.preload }
+			>
+				<Gridicon icon={ this.props.icon } size={ 24 } />
+				<span className="menu-link-text">{ this.props.label }</span>
+				{ isExternalLink ? <span className="noticon noticon-external" /> : null }
+			</a>
+		)
+	},
+
+	renderMozItem() {
+		return (
+			<a
+				onClick={ this.props.onNavigate }
+				href={ this.props.link }
+				onMouseEnter={ this.preload }
+			>
+				<Gridicon icon={ this.props.icon } size={ 24 } />
+				<span className="menu-link-text">{ 'Add ' + this.props.label }</span>
+			</a>
+		)
+	},
+
 	preload() {
 		if ( ! this._preloaded && this.props.preloadSectionName ) {
 			this._preloaded = true;
@@ -58,16 +86,7 @@ export default React.createClass( {
 
 		return (
 			<li className={ classes }>
-				<a
-					onClick={ this.props.onNavigate }
-					href={ this.props.link }
-					target={ isExternalLink ? '_blank' : null }
-					onMouseEnter={ this.preload }
-				>
-					<Gridicon icon={ this.props.icon } size={ 24 } />
-					<span className="menu-link-text">{ this.props.label }</span>
-					{ isExternalLink ? <span className="noticon noticon-external" /> : null }
-				</a>
+				{ this.props.mozCustomPageType ? this.renderMozItem() : this.renderDefaultItem(isExternalLink) }
 				{ this.renderButton( this.props.buttonLink ) }
 			</li>
 		);
