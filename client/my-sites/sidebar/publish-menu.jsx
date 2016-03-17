@@ -21,7 +21,12 @@ import QueryPostTypes from 'components/data/query-post-types';
 import analytics from 'lib/analytics';
 import { decodeEntities } from 'lib/formatting';
 
-const PublishMenu = React.createClass( {
+var SidebarItem = require( 'layout/sidebar/item' ),
+	config = require( 'config' );
+	// [MozNote] We don't wanna show WP's custom post page, e.g., Testimonials, Portfolio.
+	//           Let's remove code related to postTypesList = require( 'lib/post-types-list' )();
+
+var PublishMenu = React.createClass( {
 	propTypes: {
 		site: React.PropTypes.oneOfType( [
 			React.PropTypes.object,
@@ -89,9 +94,16 @@ const PublishMenu = React.createClass( {
 		this.props.onNavigate();
 	},
 
-	renderMenuItem( menuItem ) {
-		const { site } = this.props;
-		if ( site.capabilities && ! site.capabilities[ menuItem.capability ] ) {
+	renderMenuItem: function( menuItem ) {
+		var className = this.props.itemLinkClass(
+				menuItem.paths ? menuItem.paths : menuItem.link,
+				menuItem.className
+			),
+			isEnabled = config.isEnabled( menuItem.config ),
+			link,
+			icon;
+
+		if ( this.props.site.capabilities && ! this.props.site.capabilities[ menuItem.capability ] ) {
 			return null;
 		}
 
@@ -114,9 +126,21 @@ const PublishMenu = React.createClass( {
 			link = menuItem.link + this.props.siteSuffix;
 		}
 
+		if ( menuItem.mozCustomPageType ) {
+			link = link + "/?pageType=" + menuItem.name
+		}
+
 		let preload;
 		if ( includes( [ 'post', 'page' ], menuItem.name ) ) {
 			preload = 'posts-pages';
+
+		} else if ( menuItem.name === 'page' || menuItem.mozCustomPageType ) {
+			icon = 'pages';
+			preload = 'posts-pages';
+		} else if ( menuItem.name === 'jetpack-portfolio' ) {
+			icon = 'folder';
+		} else if ( menuItem.name === 'jetpack-testimonial' ) {
+			icon = 'quote';
 		} else {
 			preload = 'posts-custom';
 		}
@@ -145,6 +169,7 @@ const PublishMenu = React.createClass( {
 				onNavigate={ this.onNavigate.bind( this, menuItem.name ) }
 				icon={ icon }
 				preloadSectionName={ preload }
+				mozCustomPageType={ menuItem.mozCustomPageType }
 			/>
 		);
 	},
@@ -174,17 +199,49 @@ const PublishMenu = React.createClass( {
 				wpAdminLink: 'edit.php?post_type=' + postType.name,
 				showOnAllMySites: false,
 				buttonLink
-			};
-		} );
-	},
+      };
+    } );
+  },
 
-	render() {
-		const menuItems = [
-			...this.getDefaultMenuItems(),
-			...this.getCustomMenuItems()
+	render: function() {
+		var menuItems = this.getDefaultMenuItems( this.props.site );
+		// [MozNote] These are the all the page templates we have available in mozmaker-template
+		var customPostTypes = [
+			{
+				name: 'three-box-page',
+				label: this.translate( '3-Box Page' )
+			},
+			{
+				name: 'resource-list-page',
+				label: this.translate( 'Resource List Page' )
+			},
+			{
+				name: 'scrolling-guide-page',
+				label: this.translate( 'Scrolling Guide Page' )
+			},
+			{
+				name: 'recurring-event-page',
+				label: this.translate( 'Recurring Event Page' )
+			}
 		];
 
-		return (
+		var customMenuItems = customPostTypes.map( function( postType ) {
+			return {
+				name: postType.name,
+				label: postType.labels ? postType.labels.menu_name : postType.label,
+				className: 'pages ' + postType.name,
+				capability: 'edit_pages',
+				config: 'manage/pages',
+				// [Notes from Calypso] Required to build the menu item class name. Must be discernible from other
+				// items' paths in the same section for item highlighting to work properly.
+				link: '/page', // [MozNote] this prevents highlighting from working properly but we can't really fix this problem
+				wpAdminLink: 'edit.php?post_type=page',
+				showOnAllMySites: true,
+				mozCustomPageType: true
+      };
+    } );
+
+    return (
 			<ul>
 				{ this.props.site && (
 					<QueryPostTypes siteId={ this.props.site.ID } />
