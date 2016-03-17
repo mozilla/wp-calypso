@@ -138,7 +138,7 @@ var PublishMenu = React.createClass( {
 		}
 
 		if ( menuItem.mozCustomPageType ) {
-			link = link + "/?pageType=" + menuItem.name
+			link = link + '/?pageType=' + menuItem.name
 		}
 
 		let preload;
