@@ -376,7 +376,6 @@ module.exports = function() {
 	} );
 
 	if ( config.isEnabled( 'manage/themes/details' ) ) {
-
 		app.get( '/themes/:theme_slug', function( req, res ) {
 			const context = getDefaultContext( req );
 
