@@ -45,7 +45,7 @@ export default React.createClass( {
 		);
 	},
 
-	renderDefaultItem(isExternalLink) {
+	renderDefaultItem( isExternalLink ) {
 		return (
 			<a
 				onClick={ this.props.onNavigate }
@@ -86,7 +86,7 @@ export default React.createClass( {
 
 		return (
 			<li className={ classes } data-tip-target={ this.props.tipTarget } >
-				{ this.props.mozCustomPageType ? this.renderMozItem() : this.renderDefaultItem(isExternalLink) }
+				{ this.props.mozCustomPageType ? this.renderMozItem() : this.renderDefaultItem( isExternalLink ) }
 				{ this.renderButton( this.props.buttonLink ) }
 			</li>
 		);
