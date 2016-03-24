@@ -41,6 +41,12 @@ var PublishMenu = React.createClass( {
 		onNavigate: React.PropTypes.func
 	},
 
+	getInitialState: function() {
+		return {
+			mozmakerPartialsLoaded: false
+		};
+	},
+
 	// We default to `/my` posts when appropriate
 	getMyParameter() {
 		const { sites, site } = this.props;
