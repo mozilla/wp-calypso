@@ -30,10 +30,10 @@ var PublishMenu = React.createClass( {
 	},
 
 	getInitialState: function() {
-    return { 
-    	mozmakerPartialsLoaded: false 
-    };
-  },
+		return { 
+			mozmakerPartialsLoaded: false 
+		};
+	},
 
 	// We default to `/my` posts when appropriate
 	getMyParameter: function( selectedSite ) {
