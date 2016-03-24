@@ -1,17 +1,14 @@
 /**
  * External dependencies
  */
-<<<<<<< 517d9d459bc01ffb62d021894c6f863129eff2e1
 import React from 'react';
+import request from 'superagent';
 import { connect } from 'react-redux';
 import includes from 'lodash/includes';
 import omit from 'lodash/omit';
 import map from 'lodash/map';
 import get from 'lodash/get';
 import mapValues from 'lodash/mapValues';
-=======
-var React = require( 'react' );
->>>>>>> fixed linting warnings
 
 /**
  * Internal dependencies
