@@ -8,7 +8,8 @@ const ReactDom = require( 'react-dom' ),
 	classnames = require( 'classnames' ),
 	debounce = require( 'lodash/debounce' ),
 	throttle = require( 'lodash/throttle' ),
-	assign = require( 'lodash/assign' );
+	assign = require( 'lodash/assign' ),
+	request = require( 'superagent' );
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -510,6 +511,32 @@ const PostEditor = React.createClass( {
 		return typeof messages[ type ][ name ] === 'function' ? messages[ type ][ name ].apply( this ) : null;
 	},
 
+	getPageType: function(callback) {
+		var href = window.location.href;
+		var queryParam = href.split("?")[1];
+		var indexOfPageType = queryParam.indexOf("pageType=") + "pageType=".length;
+		var pageType = queryParam.substr(indexOfPageType);
+		
+		if ( pageType === 'blank' ) {
+			callback("");
+		}
+
+		request
+			.get("http://mozilla.github.io/mozmaker-templates/api/partial/"+pageType)
+			.accept('json')
+			.end(function(err, res) {
+			  var ifError;
+			  var html = "";
+			  if ( err || res.status !== 200 ) {
+			    ifError = true;
+			  } else {
+			    html = JSON.parse(res.text).html;
+			  }
+			  // console.log("html = ", html);
+			  callback(html);
+			});
+	},
+
 	onNoticeClick: function( event ) {
 		event.preventDefault();
 		this.setState( { notice: false } );
@@ -528,8 +555,17 @@ const PostEditor = React.createClass( {
 
 		if ( loadingError ) {
 			this.setState( { loadingError } );
+		} else if ( PostEditStore.isNew() && this.state.isNew ) {
+			// a brand new page
+			var self = this;
+			var editor = this.refs.editor;
+			this.getPageType(function(htmlTemplate) {
+				self.setState( self.getInitialState(), function() {
+					editor.setEditorContent( htmlTemplate );
+				} );
+			});
 		} else if ( ( PostEditStore.isNew() && ! this.state.isNew ) || PostEditStore.isLoading() ) {
-			// is new or loading
+			// is new page that has been saved as draft or loading
 			this.setState( this.getInitialState(), function() {
 				this.refs.editor.setEditorContent( '' );
 			} );

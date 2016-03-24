@@ -2,6 +2,7 @@
  * External dependencies
  */
 var React = require( 'react' );
+var request = require( 'superagent' );
 
 /**
  * Internal dependencies
@@ -27,6 +28,12 @@ var PublishMenu = React.createClass( {
 		itemLinkClass: React.PropTypes.func,
 		onNavigate: React.PropTypes.func,
 	},
+
+	getInitialState: function() {
+    return { 
+    	mozmakerPartialsLoaded: false 
+    };
+  },
 
 	// We default to `/my` posts when appropriate
 	getMyParameter: function( selectedSite ) {
@@ -76,7 +83,7 @@ var PublishMenu = React.createClass( {
 				capability: 'edit_pages',
 				config: 'manage/pages',
 				link: '/pages',
-				buttonLink: this.getNewPageLink( site ),
+				// buttonLink: this.getNewPageLink( site ),
 				wpAdminLink: 'edit.php?post_type=page',
 				showOnAllMySites: true,
 			}
@@ -147,29 +154,49 @@ var PublishMenu = React.createClass( {
 		);
 	},
 
-	render: function() {
-		var menuItems = this.getDefaultMenuItems( this.props.site );
-		// [MozNote] These are the all the page templates we have available in mozmaker-template
-		var customPostTypes = [
-			{
-				name: 'three-box-page',
-				label: this.translate( '3-Box Page' )
-			},
-			{
-				name: 'resource-list-page',
-				label: this.translate( 'Resource List Page' )
-			},
-			{
-				name: 'scrolling-guide-page',
-				label: this.translate( 'Scrolling Guide Page' )
-			},
-			{
-				name: 'recurring-event-page',
-				label: this.translate( 'Recurring Event Page' )
-			}
-		];
+	getMozmakerPartials: function(callback) {
+		var self = this;
+		request
+			.get("http://mozilla.github.io/mozmaker-templates/api/partials")
+			.accept('json')
+			.end(function(err, res) {
+			  var ifError;
+			  var partialTypes;
+			  if ( err || res.status !== 200 ) {
+			    ifError = true;
+			  } else {
+			    partialTypes = JSON.parse(res.text);
+			  }
+			  partialTypes = partialTypes.map(function(partialType) {
+			  	return {
+			  		name: partialType,
+			  		label: partialType.replace("-", " ").toUpperCase()
+			  	}
+			  });
+			  self.mozmakerParitialTypes = partialTypes;
+			  if ( !self.state.mozmakerPartialsLoaded ) {
+			  	self.setState( { mozmakerPartialsLoaded: true } );
+			  }
+			});
+	},
 
-		var customMenuItems = customPostTypes.map( function( postType ) {
+	mozmakerParitialTypes: null,
+
+	componentWillMount: function() {
+		this.getMozmakerPartials();
+	},
+
+	render: function() {
+
+		console.log("*********** this.mozmakerParitialTypes *** ", this.mozmakerParitialTypes);
+		var menuItems = this.getDefaultMenuItems( this.props.site );
+		var blankPage = [{
+			name: 'blank',
+			label: this.translate( 'Blank' ).toUpperCase()
+		}];
+		// [MozNote] These are the all the page templates we have available in mozmaker-template
+		var customPostTypes = !this.state.mozmakerPartialsLoaded ? [] : this.mozmakerParitialTypes;
+		var customMenuItems = blankPage.concat(customPostTypes).map( function( postType ) {
 			return {
 				name: postType.name,
 				label: postType.labels ? postType.labels.menu_name : postType.label,
