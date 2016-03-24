@@ -40,7 +40,7 @@ export function supportUserTokenFetch( supportUser, supportPassword ) {
 	}
 }
 
-export function supportUserTokenSet( supportUser, supportToken ) {
+export function supportUserTokenSet( supportUser, supportToken ) {console.log(supportToken)
 	return {
 		type: SUPPORT_USER_TOKEN_SET,
 		supportUser,

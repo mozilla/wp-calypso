@@ -663,28 +663,6 @@ module.exports = React.createClass( {
 					sites={ this.props.sites }
 					siteCount={ this.props.user.get().visible_site_count }
 				/>
-				<SidebarMenu>
-					<ul>
-						{ this.stats() }
-						{ this.ads() }
-						{ this.plan() }
-					</ul>
-				</SidebarMenu>
-
-				{ vip
-					? <SidebarMenu>
-						<SidebarHeading>VIP</SidebarHeading>
-						<ul>
-							{ this.vip() }
-							{ this.vipDeploys() }
-							{ this.vipBilling() }
-							{ this.vipSupport() }
-							{ this.vipBackups() }
-							{ this.vipLogs() }
-						</ul>
-					</SidebarMenu>
-					: null
-				}
 
 				{ publish
 					? <SidebarMenu>
@@ -700,21 +678,6 @@ module.exports = React.createClass( {
 						<ul>
 							{ this.themes() }
 							{ this.menus() }
-						</ul>
-					</SidebarMenu>
-					: null
-				}
-
-				{ configuration
-					? <SidebarMenu>
-						<SidebarHeading>{ this.translate( 'Configure' ) }</SidebarHeading>
-						<ul>
-							{ this.sharing() }
-							{ this.users() }
-							{ this.plugins() }
-							{ this.upgrades() }
-							{ this.siteSettings() }
-							{ this.wpAdmin() }
 						</ul>
 					</SidebarMenu>
 					: null
