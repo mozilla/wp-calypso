@@ -2,13 +2,17 @@
  * External dependencies
  */
 import React from 'react';
+import request from 'superagent';
 import { connect } from 'react-redux';
 import includes from 'lodash/includes';
 import omit from 'lodash/omit';
 import map from 'lodash/map';
 import get from 'lodash/get';
 import mapValues from 'lodash/mapValues';
+<<<<<<< 26c6a65bc7b7b6e2e58abd9115eb1da31d38752d
 import request from 'superagent';
+=======
+>>>>>>> dynamically pulls mozmaker-template partial options into Calypso
 
 /**
  * Internal dependencies

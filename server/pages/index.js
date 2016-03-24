@@ -22,7 +22,6 @@ var HASH_LENGTH = 10,
 var staticFiles = [
 	{ path: 'style.css' },
 	{ path: 'editor.css' },
-	{ path: 'mozmaker.css'},
 	{ path: 'tinymce/skins/wordpress/wp-content.css' },
 	{ path: 'style-debug.css' },
 	{ path: 'style-rtl.css' }
@@ -154,8 +153,7 @@ function getDefaultContext( request ) {
 		clientIp: request.ip ? request.ip.replace( '::ffff:', '' ) : request.ip,
 		isDebug: context.env === 'development' || context.isDebug,
 		tinymceWpSkin: context.urls[ 'tinymce/skins/wordpress/wp-content.css' ],
-		tinymceEditorDefaultCss: context.urls[ 'editor.css' ],
-		tinymceEditorExtendCss: context.urls[ 'mozmaker.css' ]
+		tinymceEditorDefaultCss: context.urls[ 'editor.css' ]
 	};
 
 	if ( CALYPSO_ENV === 'wpcalypso' ) {
