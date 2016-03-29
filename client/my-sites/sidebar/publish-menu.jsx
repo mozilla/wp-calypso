@@ -74,7 +74,6 @@ var PublishMenu = React.createClass( {
 				queryable: true,
 				link: '/posts' + this.getMyParameter(),
 				paths: [ '/posts', '/posts/my' ],
-				buttonLink: site ? '/post/' + site.slug : '/post',
 				wpAdminLink: 'edit.php',
 				showOnAllMySites: true,
 			},
@@ -219,7 +218,7 @@ var PublishMenu = React.createClass( {
         var partialTypes = [];
         if ( res.status === 200 ) {
           partialTypes = JSON.parse( res.text );
-        }
+      }
         partialTypes = partialTypes.map( function( partialType ) {
           return {
             name: partialType,
@@ -235,6 +234,10 @@ var PublishMenu = React.createClass( {
 
 	render: function() {
 		var menuItems = this.getDefaultMenuItems( this.props.site );
+    var blankPage = [{
+      name: 'blank',
+      label: this.translate( 'Blank' ).toUpperCase
+    }];
 		// [MozNote] These are the all the page templates we have available in mozmaker-template
 		var customPostTypes = !this.state.mozmakerPartialsLoaded ? [] : this.mozmakerParitialTypes;
 		var customMenuItems = blankPage.concat( customPostTypes ).map( function( postType ) {
