@@ -76,7 +76,6 @@ var PublishMenu = React.createClass( {
 				queryable: true,
 				link: '/posts' + this.getMyParameter(),
 				paths: [ '/posts', '/posts/my' ],
-				buttonLink: site ? '/post/' + site.slug : '/post',
 				wpAdminLink: 'edit.php',
 				showOnAllMySites: true,
 			},
