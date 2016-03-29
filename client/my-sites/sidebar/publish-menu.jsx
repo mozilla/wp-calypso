@@ -83,7 +83,6 @@ var PublishMenu = React.createClass( {
 				capability: 'edit_pages',
 				config: 'manage/pages',
 				link: '/pages',
-				// buttonLink: this.getNewPageLink( site ),
 				wpAdminLink: 'edit.php?post_type=page',
 				showOnAllMySites: true,
 			}
@@ -189,7 +188,7 @@ var PublishMenu = React.createClass( {
 			name: 'blank',
 			label: this.translate( 'Blank' ).toUpperCase()
 		}];
-		// [MozNote] These are the all the page templates we have available in mozmaker-template
+		// [MozNote] These are the all the partials we have available in mozmaker-template
 		var customPostTypes = !this.state.mozmakerPartialsLoaded ? [] : this.mozmakerParitialTypes;
 		var customMenuItems = blankPage.concat( customPostTypes ).map( function( postType ) {
 			return {
