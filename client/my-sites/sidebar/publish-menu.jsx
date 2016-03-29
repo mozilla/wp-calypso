@@ -210,29 +210,35 @@ var PublishMenu = React.createClass( {
     } );
   },
 
+  getMozmakerPartials: function() {
+    var self = this;
+    request
+      .get( 'http://mozilla.github.io/mozmaker-templates/api/partials' )
+      .accept( 'json' )
+      .end( function( err, res ) {
+        var partialTypes = [];
+        if ( res.status === 200 ) {
+          partialTypes = JSON.parse( res.text );
+        }
+        partialTypes = partialTypes.map( function( partialType ) {
+          return {
+            name: partialType,
+            label: partialType.replace( '-', ' ' ).toUpperCase()
+          }
+        } );
+        self.mozmakerParitialTypes = partialTypes;
+        if ( !self.state.mozmakerPartialsLoaded ) {
+          self.setState( { mozmakerPartialsLoaded: true } );
+        }
+      } );
+  },
+
 	render: function() {
 		var menuItems = this.getDefaultMenuItems( this.props.site );
 		// [MozNote] These are the all the page templates we have available in mozmaker-template
-		var customPostTypes = [
-			{
-				name: 'three-box-page',
-				label: this.translate( '3-Box Page' )
-			},
-			{
-				name: 'resource-list-page',
-				label: this.translate( 'Resource List Page' )
-			},
-			{
-				name: 'scrolling-guide-page',
-				label: this.translate( 'Scrolling Guide Page' )
-			},
-			{
-				name: 'recurring-event-page',
-				label: this.translate( 'Recurring Event Page' )
-			}
-		];
+		var customPostTypes = !this.state.mozmakerPartialsLoaded ? [] : this.mozmakerParitialTypes;
+		var customMenuItems = blankPage.concat( customPostTypes ).map( function( postType ) {
 
-		var customMenuItems = customPostTypes.map( function( postType ) {
 			return {
 				name: postType.name,
 				label: postType.labels ? postType.labels.menu_name : postType.label,

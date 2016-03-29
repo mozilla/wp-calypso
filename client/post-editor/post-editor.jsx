@@ -44,8 +44,8 @@ const actions = require( 'lib/posts/actions' ),
 	i18n = require( 'lib/mixins/i18n' ),
 	EditorPreview = require( './editor-preview' ),
 	stats = require( 'lib/posts/stats' ),
-	analytics = require( 'lib/analytics' );
-
+	analytics = require( 'lib/analytics' ),
+	postTypesList = require( 'lib/post-types-list' )();
 import {
 	setContent,
 	setExcerpt,
@@ -347,12 +347,12 @@ const PostEditor = React.createClass( {
 								<EditorTitleContainer
 									onChange={ this.debouncedAutosave }
 									tabIndex={ 1 } />
-								{ this.state.post && isPage && site ?
-									<EditorPageSlug
-										slug={ this.state.post.slug }
-										path={ this.state.post.URL ? utils.getPagePath( this.state.post ) : site.URL + '/' }
-									/> :
-									null
+								{ this.state.post && isPage && site
+									? <EditorPageSlug
+											slug={ this.state.post.slug }
+											path={ this.state.post.URL ? utils.getPagePath( this.state.post ) : site.URL + '/' }
+										/>
+									: null
 								}
 								<SegmentedControl className="editor__switch-mode" compact={ true }>
 									<SegmentedControlItem
@@ -486,30 +486,25 @@ const PostEditor = React.createClass( {
 		return typeof messages[ type ][ name ] === 'function' ? messages[ type ][ name ].apply( this ) : null;
 	},
 
-	getPageType: function(callback) {
+	getPageType: function( callback ) {
 		var href = window.location.href;
-		var queryParam = href.split("?")[1];
-		var indexOfPageType = queryParam.indexOf("pageType=") + "pageType=".length;
-		var pageType = queryParam.substr(indexOfPageType);
-		
+		var queryParam = href.split( '?' )[1];
+		var indexOfPageType = queryParam.indexOf( 'pageType=' ) + 'pageType='.length;
+		var pageType = queryParam.substr( indexOfPageType );
 		if ( pageType === 'blank' ) {
-			callback("");
+			callback( '' );
 		}
 
 		request
-			.get("http://mozilla.github.io/mozmaker-templates/api/partial/"+pageType)
-			.accept('json')
-			.end(function(err, res) {
-			  var ifError;
-			  var html = "";
-			  if ( err || res.status !== 200 ) {
-			    ifError = true;
-			  } else {
-			    html = JSON.parse(res.text).html;
-			  }
-			  // console.log("html = ", html);
-			  callback(html);
-			});
+			.get( 'http://mozilla.github.io/mozmaker-templates/api/partial/' + pageType )
+			.accept( 'json' )
+			.end( function( err, res ) {
+				var html = '';
+				if ( res.status === 200 ) {
+					html = JSON.parse( res.text ).html;
+				}
+				callback( html );
+			} );
 	},
 
 	onNoticeClick: function( event ) {
@@ -526,19 +521,19 @@ const PostEditor = React.createClass( {
 	onEditedPostChange: function() {
 		var didLoad = this.state.isLoading && ! PostEditStore.isLoading(),
 			loadingError = PostEditStore.getLoadingError(),
+			self = this,
+			editor = this.refs.editor,
 			postEditState, post, site;
 
 		if ( loadingError ) {
 			this.setState( { loadingError } );
 		} else if ( PostEditStore.isNew() && this.state.isNew ) {
 			// a brand new page
-			var self = this;
-			var editor = this.refs.editor;
-			this.getPageType(function(htmlTemplate) {
+			this.getPageType( function( htmlTemplate ) {
 				self.setState( self.getInitialState(), function() {
 					editor.setEditorContent( htmlTemplate );
 				} );
-			});
+			} );
 		} else if ( ( PostEditStore.isNew() && ! this.state.isNew ) || PostEditStore.isLoading() ) {
 			// is new page that has been saved as draft or loading
 			this.setState( this.getInitialState(), function() {
