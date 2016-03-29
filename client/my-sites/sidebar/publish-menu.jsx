@@ -30,8 +30,8 @@ var PublishMenu = React.createClass( {
 	},
 
 	getInitialState: function() {
-		return { 
-			mozmakerPartialsLoaded: false 
+		return {
+			mozmakerPartialsLoaded: false
 		};
 	},
 
@@ -154,30 +154,27 @@ var PublishMenu = React.createClass( {
 		);
 	},
 
-	getMozmakerPartials: function(callback) {
+	getMozmakerPartials: function() {
 		var self = this;
 		request
-			.get("http://mozilla.github.io/mozmaker-templates/api/partials")
-			.accept('json')
-			.end(function(err, res) {
-			  var ifError;
-			  var partialTypes;
-			  if ( err || res.status !== 200 ) {
-			    ifError = true;
-			  } else {
-			    partialTypes = JSON.parse(res.text);
-			  }
-			  partialTypes = partialTypes.map(function(partialType) {
-			  	return {
-			  		name: partialType,
-			  		label: partialType.replace("-", " ").toUpperCase()
-			  	}
-			  });
-			  self.mozmakerParitialTypes = partialTypes;
-			  if ( !self.state.mozmakerPartialsLoaded ) {
-			  	self.setState( { mozmakerPartialsLoaded: true } );
-			  }
-			});
+			.get( 'http://mozilla.github.io/mozmaker-templates/api/partials' )
+			.accept( 'json' )
+			.end( function( err, res ) {
+				var partialTypes = [];
+				if ( res.status === 200 ) {
+					partialTypes = JSON.parse( res.text );
+				}
+				partialTypes = partialTypes.map( function( partialType ) {
+					return {
+						name: partialType,
+						label: partialType.replace( '-', ' ' ).toUpperCase()
+					}
+				} );
+				self.mozmakerParitialTypes = partialTypes;
+				if ( !self.state.mozmakerPartialsLoaded ) {
+					self.setState( { mozmakerPartialsLoaded: true } );
+				}
+			} );
 	},
 
 	mozmakerParitialTypes: null,
@@ -187,8 +184,6 @@ var PublishMenu = React.createClass( {
 	},
 
 	render: function() {
-
-		console.log("*********** this.mozmakerParitialTypes *** ", this.mozmakerParitialTypes);
 		var menuItems = this.getDefaultMenuItems( this.props.site );
 		var blankPage = [{
 			name: 'blank',
@@ -196,7 +191,7 @@ var PublishMenu = React.createClass( {
 		}];
 		// [MozNote] These are the all the page templates we have available in mozmaker-template
 		var customPostTypes = !this.state.mozmakerPartialsLoaded ? [] : this.mozmakerParitialTypes;
-		var customMenuItems = blankPage.concat(customPostTypes).map( function( postType ) {
+		var customMenuItems = blankPage.concat( customPostTypes ).map( function( postType ) {
 			return {
 				name: postType.name,
 				label: postType.labels ? postType.labels.menu_name : postType.label,
