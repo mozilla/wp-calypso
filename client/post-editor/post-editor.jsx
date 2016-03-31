@@ -8,6 +8,7 @@ const ReactDom = require( 'react-dom' ),
 	classnames = require( 'classnames' ),
 	debounce = require( 'lodash/debounce' ),
 	throttle = require( 'lodash/throttle' ),
+	store = require( 'store' ),
 	assign = require( 'lodash/assign' ),
 	request = require( 'superagent' );
 import { connect } from 'react-redux';
@@ -238,6 +239,7 @@ const PostEditor = React.createClass( {
 			isDirty: PostEditStore.isDirty(),
 			isSaveBlocked: PostEditStore.isSaveBlocked(),
 			hasContent: PostEditStore.hasContent(),
+			teachPreviewUrl: store.get( 'teachPreviewUrl' ),
 			previewUrl: PostEditStore.getPreviewUrl(),
 			post: PostEditStore.get(),
 			isNew: PostEditStore.isNew(),
@@ -388,6 +390,7 @@ const PostEditor = React.createClass( {
 								isSaving={ this.state.isSaving || this.state.isAutosaving }
 								isLoading={ this.state.isLoading }
 								previewUrl={ this.state.previewUrl }
+								postId={ this.state.post && this.state.post.ID || null }
 
 							/>
 						: null }
@@ -441,6 +444,7 @@ const PostEditor = React.createClass( {
 								isPublishing={ this.state.isPublishing }
 								onSave={ this.onSave }
 								onPreview={ this.onPreview }
+								onTeachPreview={ this.onTeachPreview }
 								onPublish={ this.onPublish }
 								onTrashingPost={ this.onTrashingPost }
 								site={ site }
@@ -528,7 +532,9 @@ const PostEditor = React.createClass( {
 				if ( res.status === 200 ) {
 					html = JSON.parse( res.text ).html;
 				}
-				callback( html );
+				callback( html.replace( /((?:\\.|[^"\\])*).png/g, function( url ) {
+					return `http://mozilla.github.io/mozmaker-templates/demo/${url}`;
+				} ) );
 			} );
 	},
 
@@ -708,6 +714,36 @@ const PostEditor = React.createClass( {
 		}.bind( this ) );
 
 		this.setState( { isSaving: true } );
+	},
+
+	onTeachPreview: function() {
+		var status = 'draft',
+			previewPost;
+
+		if ( this.state.savedPost && this.state.savedPost.status ) {
+			status = this.state.savedPost.status;
+		}
+
+		previewPost = function() {
+			if ( this._previewWindow && store.get( 'teachPreviewUrl' ) === this._teachPreviewUrl && !this._previewWindow.closed ) {
+				this._previewWindow.location = this.state.teachPreviewUrl;
+				this._previewWindow.focus();
+			} else {
+				this._teachPreviewUrl = store.get( 'teachPreviewUrl' );
+				this._previewWindow = window.open( store.get( 'teachPreviewUrl' ), 'WordPress.com Post Preview' );
+			}
+		}.bind( this );
+
+		if ( status === 'publish' ) {
+			this.props.setContent( this.refs.editor.getContent() );
+			this.props.autosave( previewPost );
+
+		// TODO: REDUX - remove flux actions when whole post-editor is reduxified
+			actions.edit( { content: this.refs.editor.getContent() } );
+			actions.autosave( previewPost );
+		} else {
+			this.onSave( null, previewPost );
+		}
 	},
 
 	onPreview: function( event ) {

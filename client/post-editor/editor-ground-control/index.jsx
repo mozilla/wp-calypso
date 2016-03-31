@@ -3,7 +3,8 @@
  */
 const noop = require( 'lodash/noop' ),
 	React = require( 'react' ),
-	PureRenderMixin = require( 'react-pure-render/mixin' );
+	PureRenderMixin = require( 'react-pure-render/mixin' ),
+	store = require( 'store' );
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -69,6 +70,7 @@ const EditorGroundControl = React.createClass( {
 
 	getInitialState: function() {
 		return {
+			teachiFrameUrl: store.get( 'teachiFrameUrl' ),
 			showSchedulePopover: false,
 			showAdvanceStatus: false,
 			showDateTooltip: false,
@@ -286,6 +288,9 @@ const EditorGroundControl = React.createClass( {
 		stats.recordEvent( eventLabel );
 		stats.recordStat( 'save_draft_clicked' );
 	},
+	onPreviewTeachButtonClick: function ( event ) {
+		this.props.onTeachPreview( event );
+	},
 
 	onPreviewButtonClick: function( event ) {
 		this.props.onPreview( event );
@@ -370,6 +375,13 @@ const EditorGroundControl = React.createClass( {
 						tabIndex={ 4 }
 					>
 						{ this.getPreviewLabel() }
+					</button>
+					<button
+						className="editor-ground-control__preview-button button"
+						onClick={ this.onPreviewTeachButtonClick }
+						tabIndex={ 4 }
+					>
+					Preview on Teach
 					</button>
 					<div className="editor-ground-control__publish-combo">
 						<button
