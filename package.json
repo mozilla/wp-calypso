@@ -44,7 +44,6 @@
     "express": "4.13.3",
     "fbjs": "0.5.0",
     "flux": "2.1.1",
-    "foxlight": "git://github.com/mozilla/foxlight.git#gh-pages",
     "he": "0.5.0",
     "html-loader": "0.4.0",
     "immutable": "3.7.5",

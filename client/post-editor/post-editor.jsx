@@ -8,7 +8,8 @@ const ReactDom = require( 'react-dom' ),
 	classnames = require( 'classnames' ),
 	debounce = require( 'lodash/debounce' ),
 	throttle = require( 'lodash/throttle' ),
-	assign = require( 'lodash/assign' );
+	assign = require( 'lodash/assign' ),
+	request = require( 'superagent' );
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -49,7 +50,7 @@ const actions = require( 'lib/posts/actions' ),
 	EditorPreview = require( './editor-preview' ),
 	stats = require( 'lib/posts/stats' ),
 	analytics = require( 'analytics' ),
-	postTypesList = require( 'lib/post-types-list')();
+	postTypesList = require( 'lib/post-types-list' )();
 import {
 	setContent,
 	setExcerpt,
@@ -350,12 +351,12 @@ const PostEditor = React.createClass( {
 								<EditorTitleContainer
 									onChange={ this.debouncedAutosave }
 									tabIndex={ 1 } />
-								{ this.state.post && isPage && site ?
-									<EditorPageSlug
-										slug={ this.state.post.slug }
-										path={ this.state.post.URL ? utils.getPagePath( this.state.post ) : site.URL + '/' }
-									/> :
-									null
+								{ this.state.post && isPage && site
+									? <EditorPageSlug
+											slug={ this.state.post.slug }
+											path={ this.state.post.URL ? utils.getPagePath( this.state.post ) : site.URL + '/' }
+										/>
+									: null
 								}
 								<SegmentedControl className="editor__switch-mode" compact={ true }>
 									<SegmentedControlItem selected={ mode === 'tinymce' } onClick={ this.switchEditorMode.bind( this, 'tinymce' ) }>
@@ -510,6 +511,27 @@ const PostEditor = React.createClass( {
 		return typeof messages[ type ][ name ] === 'function' ? messages[ type ][ name ].apply( this ) : null;
 	},
 
+	getPageType: function( callback ) {
+		var href = window.location.href;
+		var queryParam = href.split( '?' )[1];
+		var indexOfPageType = queryParam.indexOf( 'pageType=' ) + 'pageType='.length;
+		var pageType = queryParam.substr( indexOfPageType );
+		if ( pageType === 'blank' ) {
+			callback( '' );
+		}
+
+		request
+			.get( 'http://mozilla.github.io/mozmaker-templates/api/partial/' + pageType )
+			.accept( 'json' )
+			.end( function( err, res ) {
+				var html = '';
+				if ( res.status === 200 ) {
+					html = JSON.parse( res.text ).html;
+				}
+				callback( html );
+			} );
+	},
+
 	onNoticeClick: function( event ) {
 		event.preventDefault();
 		this.setState( { notice: false } );
@@ -524,12 +546,21 @@ const PostEditor = React.createClass( {
 	onEditedPostChange: function() {
 		var didLoad = this.state.isLoading && ! PostEditStore.isLoading(),
 			loadingError = PostEditStore.getLoadingError(),
+			self = this,
+			editor = this.refs.editor,
 			postEditState, post, site;
 
 		if ( loadingError ) {
 			this.setState( { loadingError } );
+		} else if ( PostEditStore.isNew() && this.state.isNew ) {
+			// a brand new page
+			this.getPageType( function( htmlTemplate ) {
+				self.setState( self.getInitialState(), function() {
+					editor.setEditorContent( htmlTemplate );
+				} );
+			} );
 		} else if ( ( PostEditStore.isNew() && ! this.state.isNew ) || PostEditStore.isLoading() ) {
-			// is new or loading
+			// is new page that has been saved as draft or loading
 			this.setState( this.getInitialState(), function() {
 				this.refs.editor.setEditorContent( '' );
 			} );

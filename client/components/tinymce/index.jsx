@@ -124,7 +124,8 @@ const CONTENT_CSS = [
 	window.app.tinymceWpSkin,
 	'//s1.wp.com/wp-includes/css/dashicons.css',
 	window.app.tinymceEditorDefaultCss,
-	window.app.tinymceEditorExtendCss,
+	'//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
+	'//mozilla.github.io/mozmaker/dest/css/mozmaker.css',
 	'//s1.wp.com/i/fonts/merriweather/merriweather.css',
 ];
 
