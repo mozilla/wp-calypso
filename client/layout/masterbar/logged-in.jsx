@@ -74,6 +74,16 @@ export default React.createClass( {
 						: this.translate( 'My Site', { comment: 'Toolbar, must be shorter than ~12 chars' } )
 					}
 				</Stats>
+				<Item
+					url="/"
+					icon="reader"
+					onClick={ this.clickReader }
+					isActive={ this.isActive( 'reader' ) }
+					tooltip={ this.translate( 'Read the blogs and topics you follow', { textOnly: true } ) }
+					preloadSection={ () => sections.preload( 'reader' ) }
+				>
+					{ this.translate( 'Reader', { comment: 'Toolbar, must be shorter than ~12 chars' } ) }
+				</Item>
 				<Publish
 					sites={ this.props.sites }
 					user={ this.props.user }

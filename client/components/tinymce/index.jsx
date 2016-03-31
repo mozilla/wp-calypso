@@ -126,8 +126,7 @@ const CONTENT_CSS = [
 	window.app.tinymceEditorDefaultCss,
 	'//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
 	'//mozilla.github.io/mozmaker/dest/css/mozmaker.css',
-	'//s1.wp.com/i/fonts/merriweather/merriweather.css',
-	'//mozilla.github.io/mozmaker/dest/css/mozmaker.css'
+	'//s1.wp.com/i/fonts/merriweather/merriweather.css'
 ];
 
 module.exports = React.createClass( {
