@@ -220,7 +220,7 @@ const PostEditor = React.createClass( {
 
 	getInitialState: function() {
 		var state = this.getPostEditState();
-		console.log(this)
+
 		return assign( {}, state, {
 			isSaving: false,
 			isPublishing: false,
@@ -239,7 +239,7 @@ const PostEditor = React.createClass( {
 			isDirty: PostEditStore.isDirty(),
 			isSaveBlocked: PostEditStore.isSaveBlocked(),
 			hasContent: PostEditStore.hasContent(),
-			teachPreviewUrl: store.get('teachPreviewUrl'),
+			teachPreviewUrl: store.get( 'teachPreviewUrl' ),
 			previewUrl: PostEditStore.getPreviewUrl(),
 			post: PostEditStore.get(),
 			isNew: PostEditStore.isNew(),
@@ -532,7 +532,9 @@ const PostEditor = React.createClass( {
 				if ( res.status === 200 ) {
 					html = JSON.parse( res.text ).html;
 				}
-				callback( html );
+				callback( html.replace( /((?:\\.|[^"\\])*).png/g, function( url ) {
+					return `http://mozilla.github.io/mozmaker-templates/demo/${url}`;
+				} ) );
 			} );
 	},
 
@@ -723,12 +725,12 @@ const PostEditor = React.createClass( {
 		}
 
 		previewPost = function() {
-			if ( this._previewWindow && this.state.teachPreviewUrl === this._teachPreviewUrl && !this._previewWindow.closed ) {
+			if ( this._previewWindow && store.get( 'teachPreviewUrl' ) === this._teachPreviewUrl && !this._previewWindow.closed ) {
 				this._previewWindow.location = this.state.teachPreviewUrl;
 				this._previewWindow.focus();
 			} else {
-				this._teachPreviewUrl = this.state.teachPreviewUrl;
-				this._previewWindow = window.open( this.state.teachPreviewUrl, 'WordPress.com Post Preview' );
+				this._teachPreviewUrl = store.get( 'teachPreviewUrl' );
+				this._previewWindow = window.open( store.get( 'teachPreviewUrl' ), 'WordPress.com Post Preview' );
 			}
 		}.bind( this );
 
@@ -736,7 +738,7 @@ const PostEditor = React.createClass( {
 			this.props.setContent( this.refs.editor.getContent() );
 			this.props.autosave( previewPost );
 
-			// TODO: REDUX - remove flux actions when whole post-editor is reduxified
+		// TODO: REDUX - remove flux actions when whole post-editor is reduxified
 			actions.edit( { content: this.refs.editor.getContent() } );
 			actions.autosave( previewPost );
 		} else {
