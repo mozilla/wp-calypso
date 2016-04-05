@@ -68,13 +68,12 @@ module.exports = {
 		const wpoauth = WPOAuth( oauthSettings );
 		const authUrl = wpoauth.urlToConnect( { scope: 'global', blog_id: 0 } );
 
+		// Extract this into a component...
 		ReactDom.render( (
-			<Main>
+			<Main className="auth">
 				<Button href={ authUrl }>Authorize</Button>
 			</Main>
-		),
-			document.getElementById( 'primary' )
-		);
+		), document.getElementById( 'primary' ) );
 	},
 
 	// Retrieve token from local storage
