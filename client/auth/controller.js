@@ -20,7 +20,7 @@ import Main from 'components/main';
 import Button from 'components/button';
 
 module.exports = {
-	login: function( context ) {
+	login: function() {
 		if ( OAuthToken.getToken() ) {
 			page( '/' );
 		} else {
@@ -47,22 +47,21 @@ module.exports = {
 		let token = store.get( 'wpcom_token' );
 
 		if ( ! token ) {
-			setTimeout( function() {
-				page( '/authorize' );
-			}, 100 );
+			page.redirect( '/authorize' );
 		} else {
 			next();
 		}
 	},
 
-	// Authorize
+	// This controller renders the API authentication screen
+	// for granting the app access to the user data
 	authorize: function() {
 		const oauthSettings = {
 			response_type: 'token',
 			client_id: config( 'oauth_client_id' ),
 			client_secret: 'n/a',
 			url: {
-				redirect: 'http://calypso.dev:3000/api/oauth/token'
+				redirect: 'http://' + config( 'hostname' ) + '/api/oauth/token'
 			}
 		};
 
@@ -78,6 +77,7 @@ module.exports = {
 		);
 	},
 
+	// Retrieve token from local storage
 	getToken: function( context ) {
 		if ( context.hash && context.hash.access_token ) {
 			store.set( 'wpcom_token', context.hash.access_token );
@@ -93,9 +93,7 @@ module.exports = {
 		user.fetching = false;
 		user.fetch();
 		user.on( 'change', function() {
-			setTimeout( function() {
-				window.location = '/sites';
-			}, 100 );
-		});
+			page.redirect( '/sites' );
+		} );
 	}
 };
