@@ -20,6 +20,8 @@ import Main from 'components/main';
 import Button from 'components/button';
 
 module.exports = {
+
+	// Login screen used by the desktop application
 	login: function() {
 		if ( OAuthToken.getToken() ) {
 			page( '/' );
@@ -54,14 +56,14 @@ module.exports = {
 	},
 
 	// This controller renders the API authentication screen
-	// for granting the app access to the user data
+	// for granting the app access to the user data using oauth
 	authorize: function() {
 		const oauthSettings = {
 			response_type: 'token',
 			client_id: config( 'oauth_client_id' ),
 			client_secret: 'n/a',
 			url: {
-				redirect: 'http://' + config( 'hostname' ) + '/api/oauth/token'
+				redirect: 'http://calypso.localhost:3000/api/oauth/token'
 			}
 		};
 
@@ -92,7 +94,7 @@ module.exports = {
 		user.fetching = false;
 		user.fetch();
 		user.on( 'change', function() {
-			page.redirect( '/sites' );
+			window.location = '/sites';
 		} );
 	}
 };
