@@ -102,6 +102,7 @@ var PublishMenu = React.createClass( {
 	},
 
 	renderMenuItem: function( menuItem ) {
+    const { site } = this.props;
 		var className = this.props.itemLinkClass(
 				menuItem.paths ? menuItem.paths : menuItem.link,
 				menuItem.className
