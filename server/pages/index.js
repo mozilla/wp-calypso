@@ -369,19 +369,6 @@ module.exports = function() {
 
 	app.get( '/start/:flowName?/:stepName?/:stepSectionName?/:lang?', setUpRoute, serverRender );
 
-	if ( config.isEnabled( 'manage/themes/details' ) ) {
-		app.get( '/themes/:theme_slug', function( req, res ) {
-			const context = getDefaultContext( req );
-
-			if ( config.isEnabled( 'server-side-rendering' ) ) {
-				const store = createReduxStore();
-
-				store.dispatch( setSection( 'themes', { hasSidebar: false, isFullScreen: true } ) );
-				context.initialReduxState = pick( store.getState(), 'ui' );
-			}
-		} );
-	}
-
 	app.get( '/accept-invite/:site_id?/:invitation_key?/:activation_key?/:auth_key?/:locale?',
 		setUpRoute,
 		serverRender
