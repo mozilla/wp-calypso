@@ -22,10 +22,8 @@ import QueryPostTypes from 'components/data/query-post-types';
 import analytics from 'lib/analytics';
 import { decodeEntities } from 'lib/formatting';
 
-var SidebarItem = require( 'layout/sidebar/item' ),
-	config = require( 'config' );
-	// [MozNote] We don't wanna show WP's custom post page, e.g., Testimonials, Portfolio.
-	//           Let's remove code related to postTypesList = require( 'lib/post-types-list' )();
+// [MozNote] We don't wanna show WP's custom post page, e.g., Testimonials, Portfolio.
+//           Let's remove code related to postTypesList = require( 'lib/post-types-list' )();
 
 var PublishMenu = React.createClass( {
 	propTypes: {
@@ -102,14 +100,7 @@ var PublishMenu = React.createClass( {
 
 	renderMenuItem: function( menuItem ) {
     const { site } = this.props;
-		var className = this.props.itemLinkClass(
-				menuItem.paths ? menuItem.paths : menuItem.link,
-				menuItem.className
-			),
-			isEnabled = config.isEnabled( menuItem.config ),
-			link,
-			icon;
-
+    
 		if ( this.props.site.capabilities && ! this.props.site.capabilities[ menuItem.capability ] ) {
 			return null;
 		}
@@ -138,6 +129,7 @@ var PublishMenu = React.createClass( {
 		}
 
 		let preload;
+    let icon;
 		if ( includes( [ 'post', 'page' ], menuItem.name ) ) {
 			preload = 'posts-pages';
 
@@ -152,7 +144,6 @@ var PublishMenu = React.createClass( {
 			preload = 'posts-custom';
 		}
 
-		let icon;
 		switch ( menuItem.name ) {
 			case 'post': icon = 'posts'; break;
 			case 'page': icon = 'pages'; break;
