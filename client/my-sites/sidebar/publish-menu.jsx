@@ -8,6 +8,7 @@ import omit from 'lodash/omit';
 import map from 'lodash/map';
 import get from 'lodash/get';
 import mapValues from 'lodash/mapValues';
+import request from 'superagent';
 
 /**
  * Internal dependencies
@@ -34,6 +35,14 @@ const PublishMenu = React.createClass( {
 		itemLinkClass: React.PropTypes.func,
 		onNavigate: React.PropTypes.func
 	},
+
+	getInitialState: function() {
+		return {
+			mozmakerPartialsLoaded: false
+		};
+	},
+
+	mozmakerParitialTypes: [],
 
 	// We default to `/my` posts when appropriate
 	getMyParameter() {
@@ -74,7 +83,6 @@ const PublishMenu = React.createClass( {
 				queryable: true,
 				config: 'manage/pages',
 				link: '/pages',
-				buttonLink: site ? '/page/' + site.slug : '/page',
 				wpAdminLink: 'edit.php?post_type=page',
 				showOnAllMySites: true,
 			}
@@ -112,6 +120,9 @@ const PublishMenu = React.createClass( {
 			link = this.props.site.options.admin_url + menuItem.wpAdminLink;
 		} else {
 			link = menuItem.link + this.props.siteSuffix;
+		}
+		if ( menuItem.mozCustomPageType ) {
+			link = link + '/?pageType=' + menuItem.name;
 		}
 
 		let preload;
@@ -178,18 +189,68 @@ const PublishMenu = React.createClass( {
 		} );
 	},
 
+	getMozmakerPartialTypes( callback ) {
+		let defaultType = [ 'blank' ];
+		let mozmakerParitialTypes = [];
+		request
+			.get( 'http://mozilla.github.io/mozmaker-templates/api/partials' )
+			.accept( 'json' )
+			.end( ( err, res ) => {
+				if ( res.status === 200 ) {
+					mozmakerParitialTypes = JSON.parse( res.text );
+				}
+				mozmakerParitialTypes = defaultType.concat( mozmakerParitialTypes ).map( function( partialType ) {
+					return {
+						name: partialType,
+						label: 'Add ' + partialType.replace( '-', ' ' ).toUpperCase() + ' Page'
+					};
+				} );
+				if ( !this.state.mozmakerPartialsLoaded ) {
+					this.setState( { mozmakerPartialsLoaded: true } );
+				}
+				callback( mozmakerParitialTypes );
+			} );
+	},
+
+	getMozmakerMenuItems() {
+		this.getMozmakerPartialTypes( ( mozmakerParitialTypes ) => {
+			mozmakerParitialTypes = map( mozmakerParitialTypes, ( postType ) => {
+				return {
+					name: postType.name,
+					label: postType.label,
+					className: 'pages',
+					capability: 'edit_pages',
+					queryable: true,
+					config: 'manage/pages',
+					link: '/page',
+					wpAdminLink: 'edit.php?post_type=page',
+					showOnAllMySites: true,
+					mozCustomPageType: true
+				};
+			} );
+			this.mozmakerParitialTypes = mozmakerParitialTypes;
+		} );
+	},
+
 	render() {
 		const menuItems = [
 			...this.getDefaultMenuItems(),
-			...this.getCustomMenuItems()
+			// ...this.getCustomMenuItems() // we don't wanna show these WP's custom post type options
 		];
 
+		if ( !this.state.mozmakerPartialsLoaded ) {
+			this.getMozmakerMenuItems();
+		}
+
+		let mozmakerMenuItems = this.mozmakerParitialTypes;
+		let allMenuItems = menuItems.concat( mozmakerMenuItems );
+		
 		return (
 			<ul>
 				{ this.props.site && (
 					<QueryPostTypes siteId={ this.props.site.ID } />
 				) }
-				{ menuItems.map( this.renderMenuItem ) }
+				{ allMenuItems.map( this.renderMenuItem ) }
 			</ul>
 		);
 	}
