@@ -132,12 +132,6 @@ public/editor.css: node_modules $(SASS_FILES)
 	@$(SASS) assets/stylesheets/editor.scss $@
 	@$(AUTOPREFIXER) $@
 
-<<<<<<< HEAD
-=======
-public/mozmaker.css:
-	cp $(THIS_DIR)/node_modules/mozmaker/dest/css/mozmaker.css public/mozmaker.css
-
->>>>>>> 56ac397... Heroku Compatible Docker builds
 server/devdocs/search-index.js: $(MD_FILES) $(ALL_DEVDOCS_JS)
 	@$(ALL_DEVDOCS_JS) $(MD_FILES)
 
@@ -149,9 +143,6 @@ build: install build-$(CALYPSO_ENV)
 
 <<<<<<< HEAD
 build-css: public/style.css public/style-rtl.css public/style-debug.css public/editor.css
-=======
-build-css: public/style.css public/style-rtl.css public/style-debug.css public/editor.css public/mozmaker.css
->>>>>>> 56ac397... Heroku Compatible Docker builds
 
 build-development: build-server $(CLIENT_CONFIG_FILE) server/devdocs/search-index.js build-css
 
