@@ -62,9 +62,9 @@ module.exports = {
 		const oauthSettings = {
 			response_type: 'token',
 			client_id: config( 'oauth_client_id' ),
-			client_secret: 'n/a',
+			client_secret: config( 'oauth_client_secret' ),
 			url: {
-				redirect: 'http://calypso.localhost:3000/api/oauth/token'
+				redirect: config( 'oauth_client_redirect_url' )
 			}
 		};
 
