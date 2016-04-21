@@ -486,13 +486,10 @@ const PostEditor = React.createClass( {
 	getPageType: function( callback ) {
 		var href = window.location.href;
 		var queryParam = href.split( '?' )[1];
-		if ( !queryParam ) {
-			return callback( '' );
-		}
 		var indexOfPageType = queryParam.indexOf( 'pageType=' ) + 'pageType='.length;
 		var pageType = queryParam.substr( indexOfPageType );
 		if ( pageType === 'blank' ) {
-			return callback( '' );
+			callback( '' );
 		}
 
 		request

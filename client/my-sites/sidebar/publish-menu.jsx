@@ -9,6 +9,7 @@ import omit from 'lodash/omit';
 import map from 'lodash/map';
 import get from 'lodash/get';
 import mapValues from 'lodash/mapValues';
+import request from 'superagent';
 
 /**
  * Internal dependencies
