@@ -5,7 +5,7 @@ MAINTAINER Mozilla Foundation <cade@mozillafoundation.org>
 WORKDIR /app/user
 
 ENV PATH=/app/heroku/node/bin/:/app/user/node_modules/.bin:$PATH \
-    NODE_VERSION=4.4.0 \
+    NODE_VERSION=5.10.1 \
     CALYPSO_ENV=production \
     NODE_ENV=production \
     NODE_PATH=/app/user/server:/app/user/client \
