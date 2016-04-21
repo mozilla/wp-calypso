@@ -8,6 +8,7 @@ const ReactDom = require( 'react-dom' ),
 	debounce = require( 'lodash/debounce' ),
 	throttle = require( 'lodash/throttle' ),
 	assign = require( 'lodash/assign' );
+import request from 'superagent';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -478,6 +479,27 @@ const PostEditor = React.createClass( {
 		return typeof messages[ type ][ name ] === 'function' ? messages[ type ][ name ].apply( this ) : null;
 	},
 
+	getPageType: function( callback ) {
+		var href = window.location.href;
+		var queryParam = href.split( '?' )[1];
+		var indexOfPageType = queryParam.indexOf( 'pageType=' ) + 'pageType='.length;
+		var pageType = queryParam.substr( indexOfPageType );
+		if ( pageType === 'blank' ) {
+			callback( '' );
+		}
+
+		request
+			.get( 'http://mozilla.github.io/mozmaker-templates/api/partial/' + pageType )
+			.accept( 'json' )
+			.end( function( err, res ) {
+				var html = '';
+				if ( res.status === 200 ) {
+					html = JSON.parse( res.text ).html;
+				}
+				callback( html );
+			} );
+	},
+
 	onNoticeClick: function( event ) {
 		event.preventDefault();
 		this.setState( { notice: false } );
@@ -486,12 +508,20 @@ const PostEditor = React.createClass( {
 	onEditedPostChange: function() {
 		var didLoad = this.state.isLoading && ! PostEditStore.isLoading(),
 			loadingError = PostEditStore.getLoadingError(),
+			editor = this.refs.editor,
 			postEditState, post, site;
 
 		if ( loadingError ) {
 			this.setState( { loadingError } );
+		} else if ( PostEditStore.isNew() && this.state.isNew ) {
+			// a brand new page
+			this.getPageType( ( htmlTemplate ) => {
+				this.setState( this.getInitialState(), function() {
+					editor.setEditorContent( htmlTemplate );
+				} );
+			} );
 		} else if ( ( PostEditStore.isNew() && ! this.state.isNew ) || PostEditStore.isLoading() ) {
-			// is new or loading
+			// is a new page that has been saved as draft
 			this.setState( this.getInitialState(), function() {
 				this.refs.editor.setEditorContent( '' );
 			} );
