@@ -210,7 +210,7 @@ var PublishMenu = React.createClass( {
 		let defaultType = [ 'blank' ];
 		let mozmakerParitialTypes = [];
 		request
-			.get( 'http://mozilla.github.io/mozmaker-templates/api/partials' )
+			.get( '//mozilla.github.io/mozmaker-templates/api/partials' )
 			.accept( 'json' )
 			.end( ( err, res ) => {
 				if ( res.status === 200 ) {

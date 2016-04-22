@@ -493,7 +493,7 @@ const PostEditor = React.createClass( {
 		}
 
 		request
-			.get( 'http://mozilla.github.io/mozmaker-templates/api/partial/' + pageType )
+			.get( '//mozilla.github.io/mozmaker-templates/api/partial/' + pageType )
 			.accept( 'json' )
 			.end( function( err, res ) {
 				var html = '';
