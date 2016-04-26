@@ -2,7 +2,9 @@
  * External dependencies
  */
 const React = require( 'react' ),
-	url = require( 'url' );
+	url = require( 'url' ),
+	querystring = require( 'querystring' ),
+	store = require( 'store' );
 
 /**
  * Internal dependencies
@@ -24,7 +26,7 @@ const EditorPreview = React.createClass( {
 
 	getInitialState() {
 		return {
-			iframeUrl: 'about:blank',
+			iframeUrl: 'about:blank'
 		};
 	},
 
@@ -39,6 +41,17 @@ const EditorPreview = React.createClass( {
 			this.didShowSavedPreviewViaTouch( prevProps )
 		) ) {
 			this.setState( { iframeUrl: this.getIframePreviewUrl() } );
+			let frameURL = this.getIframePreviewUrl();
+			let query = querystring.parse( frameURL );
+			let previewID = query.preview_id;
+			if ( !previewID ) {
+				previewID = this.props.postId;
+			}
+			store.set( 'teachPreviewUrl', `http://calypso.localhost:8008/preview/${previewID}` );
+			this.setState( {
+				iframeUrl: frameURL,
+				teachPreviewUrl: `http://calypso.localhost:8008/preview/${previewID}`
+			} );
 		}
 	},
 
