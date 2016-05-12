@@ -14,12 +14,12 @@ var version = require( '../../package.json' ).version,
 	oauth = require( './oauth' );
 
 var corsOptions = {
-	origin: 'http://calypso.localhost:8008',
+	origin: 'http://teach-cms-enabled.herokuapp.com',
 	credentials: true
 };
 const TOKEN_NAME = 'wpcom_token';
 const URL = 'https://public-api.wordpress.com/rest/v1.1/sites/';
-const BLOG = 'alicoding.wordpress.com';
+const BLOG = 'teachmozillaorg.wordpress.com';
 
 module.exports = function() {
 	var app = express();

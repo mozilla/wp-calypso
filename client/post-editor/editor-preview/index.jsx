@@ -47,10 +47,10 @@ const EditorPreview = React.createClass( {
 			if ( !previewID ) {
 				previewID = this.props.postId;
 			}
-			store.set( 'teachPreviewUrl', `http://calypso.localhost:8008/preview/${previewID}` );
+			store.set( 'teachPreviewUrl', `http://teach-cms-enabled.herokuapp.com/preview/${previewID}` );
 			this.setState( {
 				iframeUrl: frameURL,
-				teachPreviewUrl: `http://calypso.localhost:8008/preview/${previewID}`
+				teachPreviewUrl: `http://teach-cms-enabled.herokuapp.com/preview/${previewID}`
 			} );
 		}
 	},
