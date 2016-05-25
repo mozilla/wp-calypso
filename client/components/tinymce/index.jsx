@@ -131,6 +131,7 @@ const CONTENT_CSS = [
 	window.app.tinymceEditorCss,
 	'//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css',
 	'//mozilla.github.io/mozmaker/dest/css/mozmaker.css',
+	'//mozilla.github.io/mozmaker-templates/demo/main.css',
 	'//s1.wp.com/i/fonts/merriweather/merriweather.css',
 ];
 
