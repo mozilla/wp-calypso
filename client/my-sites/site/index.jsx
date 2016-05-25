@@ -191,6 +191,9 @@ export default React.createClass( {
 	toggleActions() {
 		this.setState( { showMoreActions: ! this.state.showMoreActions } );
 	},
+	preventDefault( event ) {
+		return event.preventDefault();
+	},
 
 	render() {
 		const site = this.props.site;
@@ -221,8 +224,8 @@ export default React.createClass( {
 								? this.translate( 'Visit "%(title)s"', { args: { title: site.title } } )
 								: site.title
 							}
-							onTouchTap={ this.onSelect }
-							onClick={ this.props.onClick }
+							onTouchTap={ this.preventDefault }
+							onClick={ this.preventDefault }
 							onMouseEnter={ this.props.onMouseEnter }
 							onMouseLeave={ this.props.onMouseLeave }
 							aria-label={
