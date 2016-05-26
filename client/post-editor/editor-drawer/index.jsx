@@ -136,7 +136,9 @@ const EditorDrawer = React.createClass( {
 				isNew={ this.props.isNew } />
 		);
 	},
-
+	renderNoFeaturedImage: function() {
+		return null;
+	},
 	renderFeaturedImage: function() {
 		return (
 			<Accordion
@@ -214,7 +216,7 @@ const EditorDrawer = React.createClass( {
 					isNew={ this.props.isNew }
 				/>
 			</AccordionSection>
-		)
+		);
 	},
 
 	renderMoreOptions: function() {
@@ -249,7 +251,7 @@ const EditorDrawer = React.createClass( {
 		return (
 			<div>
 				{ this.renderTaxonomies() }
-				{ this.renderFeaturedImage() }
+				{ this.renderNoFeaturedImage() }
 				<Accordion
 					title={ this.translate( 'Page Options' ) }
 					icon={ <Gridicon icon="pages" /> }>
@@ -276,7 +278,7 @@ const EditorDrawer = React.createClass( {
 		return (
 			<div>
 				{ this.renderTaxonomies() }
-				{ this.renderFeaturedImage() }
+				{ this.renderNoFeaturedImage() }
 				{ this.renderSharing() }
 				{ this.renderPostFormats() }
 				{ this.renderMoreOptions() }
