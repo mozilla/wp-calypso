@@ -2,13 +2,13 @@
  * External dependencies
  */
 import React from 'react';
+import request from 'superagent';
 import { connect } from 'react-redux';
 import includes from 'lodash/includes';
 import omit from 'lodash/omit';
 import map from 'lodash/map';
 import get from 'lodash/get';
 import mapValues from 'lodash/mapValues';
-import request from 'superagent';
 
 /**
  * Internal dependencies
@@ -22,7 +22,10 @@ import QueryPostTypes from 'components/data/query-post-types';
 import analytics from 'lib/analytics';
 import { decodeEntities } from 'lib/formatting';
 
-const PublishMenu = React.createClass( {
+// [MozNote] We don't wanna show WP's custom post page, e.g., Testimonials, Portfolio.
+//           Let's remove code related to postTypesList = require( 'lib/post-types-list' )();
+
+var PublishMenu = React.createClass( {
 	propTypes: {
 		site: React.PropTypes.oneOfType( [
 			React.PropTypes.object,
@@ -71,7 +74,6 @@ const PublishMenu = React.createClass( {
 				queryable: true,
 				link: '/posts' + this.getMyParameter(),
 				paths: [ '/posts', '/posts/my' ],
-				buttonLink: site ? '/post/' + site.slug : '/post',
 				wpAdminLink: 'edit.php',
 				showOnAllMySites: true,
 			},
@@ -97,9 +99,10 @@ const PublishMenu = React.createClass( {
 		this.props.onNavigate();
 	},
 
-	renderMenuItem( menuItem ) {
-		const { site } = this.props;
-		if ( site.capabilities && ! site.capabilities[ menuItem.capability ] ) {
+	renderMenuItem: function( menuItem ) {
+    const { site } = this.props;
+    
+		if ( this.props.site.capabilities && ! this.props.site.capabilities[ menuItem.capability ] ) {
 			return null;
 		}
 
@@ -125,14 +128,26 @@ const PublishMenu = React.createClass( {
 			link = link + '/?pageType=' + menuItem.name;
 		}
 
+		if ( menuItem.mozCustomPageType ) {
+			link = link + '/?pageType=' + menuItem.name
+		}
+
 		let preload;
+    let icon;
 		if ( includes( [ 'post', 'page' ], menuItem.name ) ) {
 			preload = 'posts-pages';
+
+		} else if ( menuItem.name === 'page' || menuItem.mozCustomPageType ) {
+			icon = 'pages';
+			preload = 'posts-pages';
+		} else if ( menuItem.name === 'jetpack-portfolio' ) {
+			icon = 'folder';
+		} else if ( menuItem.name === 'jetpack-testimonial' ) {
+			icon = 'quote';
 		} else {
 			preload = 'posts-custom';
 		}
 
-		let icon;
 		switch ( menuItem.name ) {
 			case 'post': icon = 'posts'; break;
 			case 'page': icon = 'pages'; break;
@@ -156,6 +171,7 @@ const PublishMenu = React.createClass( {
 				onNavigate={ this.onNavigate.bind( this, menuItem.name ) }
 				icon={ icon }
 				preloadSectionName={ preload }
+				mozCustomPageType={ menuItem.mozCustomPageType }
 			/>
 		);
 	},
@@ -185,15 +201,15 @@ const PublishMenu = React.createClass( {
 				wpAdminLink: 'edit.php?post_type=' + postType.name,
 				showOnAllMySites: false,
 				buttonLink
-			};
-		} );
-	},
+      };
+    } );
+  },
 
 	getMozmakerPartialTypes( callback ) {
 		let defaultType = [ 'blank' ];
 		let mozmakerParitialTypes = [];
 		request
-			.get( 'http://mozilla.github.io/mozmaker-templates/api/partials' )
+			.get( '//mozilla.github.io/mozmaker-templates/api/partials' )
 			.accept( 'json' )
 			.end( ( err, res ) => {
 				if ( res.status === 200 ) {

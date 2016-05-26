@@ -1,4 +1,4 @@
-@import 'shared/colors';
-@import 'shared/typography';
+@import 'shared/colors';                       // import all of our wpcom colors
+@import 'shared/typography';                   // all the typographic rules, variables, etc.
 
 @import 'components/tinymce/iframe';

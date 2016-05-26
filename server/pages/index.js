@@ -153,7 +153,7 @@ function getDefaultContext( request ) {
 		clientIp: request.ip ? request.ip.replace( '::ffff:', '' ) : request.ip,
 		isDebug: context.env === 'development' || context.isDebug,
 		tinymceWpSkin: context.urls[ 'tinymce/skins/wordpress/wp-content.css' ],
-		tinymceEditorCss: context.urls[ 'editor.css' ]
+		tinymceEditorDefaultCss: context.urls[ 'editor.css' ]
 	};
 
 	if ( CALYPSO_ENV === 'wpcalypso' ) {

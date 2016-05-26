@@ -1,12 +1,11 @@
 import React from 'react';
 import { expect } from 'chai';
 import { mount } from 'enzyme';
-import { spy } from 'sinon';
 
 import useFakeDom from 'test/helpers/use-fake-dom';
 import { useFakeTimers } from 'test/helpers/use-sinon';
 
-import { PageViewTracker } from '../';
+import PageViewTracker from 'analytics/page-view-tracker/component';
 
 describe( 'PageViewTracker', () => {
 	let clock;
@@ -16,31 +15,46 @@ describe( 'PageViewTracker', () => {
 		clock = fakeClock
 	} );
 
-	it( 'should immediately fire off event when given no delay', () => {
-		const recorder = spy();
+	it( 'should immediately fire off event when given no delay', done => {
+		const state = { value: false };
+		const Tracker = PageViewTracker( () => { state.value = true; } );
 
-		mount( <PageViewTracker path="/test" title="test" recorder={ recorder } /> );
+		mount( <Tracker path="/test" title="test" /> );
 
-		expect( recorder ).to.have.been.calledOnce;
+		expect( state.value ).to.be.true;
+
+		done();
 	} );
 
-	it( 'should wait for the delay before firing off the event', () => {
-		const recorder = spy();
+	it( 'should wait for the delay before firing off the event', done => {
+		const state = { value: false };
+		const Tracker = PageViewTracker( () => { state.value = true; } );
 
-		mount( <PageViewTracker delay={ 500 } path="/test" title="test" recorder={ recorder } /> );
+		mount( <Tracker delay={ 500 } path="/test" title="test" /> );
 
-		expect( recorder ).to.not.have.been.called;
+		expect( state.value ).to.be.false;
 
-		clock.tick( 500 );
+		clock.tick( 250 );
 
-		expect( recorder ).to.have.been.calledOnce
+		expect( state.value ).to.be.false;
+
+		clock.tick( 250 );
+
+		expect( state.value ).to.be.true;
+
+		done();
 	} );
 
-	it( 'should pass the appropriate event information', () => {
-		const recorder = spy();
+	it( 'should pass the appropriate event information', done => {
+		const Tracker = PageViewTracker( ( path, title ) => {
+			expect( path ).to.equal( '/test' );
+			expect( title ).to.equal( 'test' );
 
-		mount( <PageViewTracker path="/test" title="test" recorder={ recorder } /> );
+			done();
+		} );
 
-		expect( recorder ).to.have.been.calledWith( '/test', 'test' );
+		mount( <Tracker path="/test" title="test" /> );
+
+		clock.tick( 10 );
 	} );
 } );

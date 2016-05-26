@@ -8,6 +8,13 @@ import {
 	UPDATE_GUIDESTOUR,
 } from 'state/action-types';
 
+import {
+	withAnalytics,
+	recordTracksEvent,
+} from 'state/analytics/actions';
+
+import guidesConfig from 'guidestours/config';
+
 /**
  * Returns an action object to be used in signalling that a site has been set
  * as selected.
@@ -50,19 +57,51 @@ export function setSection( section, options = {} ) {
  * @param {Object} options Options object, see fn signature.
  * @return {Object} Action object
  */
-export function showGuidesTour( { shouldShow, shouldDelay = false, tour = 'main', siteId = null } ) {
-	return {
+export function showGuidesTour( { shouldShow, shouldDelay = false, tour = 'main' } ) {
+	const showAction = {
 		type: SHOW_GUIDESTOUR,
 		shouldShow,
 		shouldDelay,
 		tour,
-		siteId,
-	}
+	};
+
+	const trackEvent = recordTracksEvent( 'calypso_guided_tours_show', {
+		tour_version: guidesConfig.version,
+		tour,
+	} );
+
+	return withAnalytics( trackEvent, showAction );
 }
 
-export function nextGuidesTourStep( stepName ) {
-	return {
+export function quitGuidesTour( { tour = 'main', stepName, finished } ) {
+	const quitAction = {
+		type: UPDATE_GUIDESTOUR,
+		shouldShow: false,
+		shouldReallyShow: false,
+		shouldDelay: false,
+		tour,
+		stepName,
+	};
+
+	const trackEvent = recordTracksEvent( `calypso_guided_tours_${ finished ? 'finished' : 'quit' }`, {
+		step: stepName,
+		tour_version: guidesConfig.version,
+		tour,
+	} );
+
+	return withAnalytics( trackEvent, quitAction );
+}
+export function nextGuidesTourStep( { tour = 'main', stepName } ) {
+	const nextAction = {
 		type: UPDATE_GUIDESTOUR,
 		stepName,
 	};
+
+	const trackEvent = recordTracksEvent( 'calypso_guided_tours_next_step', {
+		step: stepName,
+		tour_version: guidesConfig.version,
+		tour,
+	} );
+
+	return withAnalytics( trackEvent, nextAction );
 }

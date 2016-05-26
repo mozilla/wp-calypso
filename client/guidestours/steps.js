@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { Component, PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react';
 
 /**
  * Internal dependencies
@@ -11,7 +11,7 @@ import Card from 'components/card';
 import Button from 'components/button';
 import ExternalLink from 'components/external-link';
 import Gridicon from 'components/gridicon';
-import { posToCss, bullseyePositioners, getStepPosition } from './positioning';
+import { posToCss, getStepPosition, getBullseyePosition, targetForSlug } from './positioning';
 
 class GuidesBasicStep extends Component {
 	render() {
@@ -56,13 +56,13 @@ class GuidesFinishStep extends Component {
 		const stepPos = getStepPosition( this.props );
 		const stepCoords = posToCss( stepPos );
 
-		const { text, onQuit, linkUrl, linkLabel } = this.props;
+		const { text, onFinish, linkUrl, linkLabel } = this.props;
 
 		return (
 			<Card className="guidestours__step" style={ stepCoords } >
 				<p>{ text }</p>
 				<div className="guidestours__single-button-row">
-					<Button onClick={ onQuit } primary>{ this.props.translate( 'Finish Tour' ) }</Button>
+					<Button onClick={ onFinish } primary>{ this.props.translate( 'Finish Tour' ) }</Button>
 				</div>
 				<div className="guidestours__external-link">
 					<ExternalLink target="_blank" icon={ true } href={ linkUrl }>{ linkLabel }</ExternalLink>
@@ -112,7 +112,9 @@ class GuidesActionStep extends Component {
 	}
 
 	addTargetListener() {
-		const { target = false, onNext } = this.props;
+		const { targetSlug = false, onNext } = this.props;
+		const target = targetForSlug( targetSlug );
+
 		if ( onNext && target.addEventListener ) {
 			target.addEventListener( 'click', onNext );
 		}
@@ -120,25 +122,18 @@ class GuidesActionStep extends Component {
 	}
 
 	removeTargetListener() {
-		const { target = false, onNext } = this.props;
+		const { targetSlug = false, onNext } = this.props;
+		const target = targetForSlug( targetSlug );
+
 		if ( onNext && target.removeEventListener ) {
 			target.removeEventListener( 'click', onNext );
 		}
 		target && target.classList.remove( 'guidestours__overlay' );
 	}
 
-	getBullseyePosition() {
-		const { placement = 'center', target } = this.props;
-		const rect = target
-			? target.getBoundingClientRect()
-			: global.window.document.body.getBoundingClientRect();
-
-		return bullseyePositioners[ placement ]( rect );
-	}
-
 	render() {
 		const stepPos = getStepPosition( this.props );
-		const bullseyePos = this.getBullseyePosition();
+		const bullseyePos = getBullseyePosition( this.props );
 		const stepCoords = posToCss( stepPos );
 		const pointerCoords = posToCss( bullseyePos );
 
@@ -163,19 +158,70 @@ class GuidesActionStep extends Component {
 }
 
 GuidesBasicStep.propTypes = {
-	target: PropTypes.object,
-	type: PropTypes.string,
+	targetSlug: PropTypes.string,
+	placement: PropTypes.string,
 	// text can be a translated string or a translated string with components
-	// attached
 	text: PropTypes.oneOfType( [
 		PropTypes.string,
 		PropTypes.array
 	] ),
-	placement: PropTypes.string,
 	next: PropTypes.string,
-	style: PropTypes.object,
 	onNext: PropTypes.func.isRequired,
 	onQuit: PropTypes.func.isRequired,
+};
+
+GuidesActionStep.propTypes = {
+	targetSlug: PropTypes.string.isRequired,
+	placement: PropTypes.string,
+	// text can be a translated string or a translated string with components
+	text: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.array
+	] ),
+	next: PropTypes.string,
+	onNext: PropTypes.func.isRequired,
+	onQuit: PropTypes.func.isRequired,
+};
+
+GuidesLinkStep.propTypes = {
+	targetSlug: PropTypes.string,
+	placement: PropTypes.string,
+	// text can be a translated string or a translated string with components
+	text: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.array
+	] ),
+	linkLabel: PropTypes.string,
+	linkUrl: PropTypes.string,
+	next: PropTypes.string,
+	onNext: PropTypes.func.isRequired,
+	onQuit: PropTypes.func.isRequired,
+};
+
+GuidesFirstStep.propTypes = {
+	targetSlug: PropTypes.string,
+	placement: PropTypes.string,
+	// text can be a translated string or a translated string with components
+	text: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.array
+	] ),
+	next: PropTypes.string,
+	onNext: PropTypes.func.isRequired,
+	onQuit: PropTypes.func.isRequired,
+};
+
+GuidesFinishStep.propTypes = {
+	targetSlug: PropTypes.string,
+	placement: PropTypes.string,
+	// text can be a translated string or a translated string with components
+	text: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.array
+	] ),
+	linkLabel: PropTypes.string,
+	linkUrl: PropTypes.string,
+	onFinish: PropTypes.func.isRequired,
 };
 
 class GuidesPointer extends Component {
