@@ -214,18 +214,19 @@ export default React.createClass( {
 			'has-edit-capabilities': userCan( 'manage_options', site )
 		} );
 
+		let href = this.props.homeLink ? site.URL : this.props.href;
 		return (
 			<div className={ siteClass }>
 				{ ! this.state.showMoreActions
 					? <a className="site__content"
-							href={ this.props.homeLink ? site.URL : this.props.href }
+							href={ href ? href : `/stats/insights/${site.domain}` }
 							target={ this.props.externalLink && ! this.state.showMoreActions && '_blank' }
 							title={ this.props.homeLink
 								? this.translate( 'Visit "%(title)s"', { args: { title: site.title } } )
 								: site.title
 							}
-							onTouchTap={ this.preventDefault }
-							onClick={ this.preventDefault }
+							onTouchTap={ href ? this.preventDefault : this.onSelect }
+							onClick={ href ? this.preventDefault : this.props.onClick }
 							onMouseEnter={ this.props.onMouseEnter }
 							onMouseLeave={ this.props.onMouseLeave }
 							aria-label={
