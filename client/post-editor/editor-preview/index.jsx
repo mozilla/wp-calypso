@@ -47,10 +47,10 @@ const EditorPreview = React.createClass( {
 			if ( !previewID ) {
 				previewID = this.props.postId;
 			}
-			store.set( 'teachPreviewUrl', `http://teach-cms-enabled.herokuapp.com/preview/${previewID}` );
+			store.set( 'teachPreviewUrl', `http://localhost:8008/preview/${previewID}` );
 			this.setState( {
 				iframeUrl: frameURL,
-				teachPreviewUrl: `http://teach-cms-enabled.herokuapp.com/preview/${previewID}`
+				teachPreviewUrl: `http://localhost:8008/preview/${previewID}`
 			} );
 		}
 	},

@@ -16,6 +16,8 @@ import sitesList from 'lib/sites-list';
 import { userCan } from 'lib/site/utils';
 import Tooltip from 'components/tooltip';
 import ExternalLink from 'components/external-link';
+import * as OAuthToken from 'lib/oauth-token';
+import store from 'store';
 
 const sites = sitesList();
 
@@ -194,6 +196,10 @@ export default React.createClass( {
 	preventDefault( event ) {
 		return event.preventDefault();
 	},
+	onClick() {
+		OAuthToken.setToken( store.get( 'wpcom_token' ) );
+		return this.props.onClick();
+	},
 
 	render() {
 		const site = this.props.site;
@@ -226,7 +232,7 @@ export default React.createClass( {
 								: site.title
 							}
 							onTouchTap={ href ? this.preventDefault : this.onSelect }
-							onClick={ href ? this.preventDefault : this.props.onClick }
+							onClick={ href ? this.preventDefault : this.onClick }
 							onMouseEnter={ this.props.onMouseEnter }
 							onMouseLeave={ this.props.onMouseLeave }
 							aria-label={
