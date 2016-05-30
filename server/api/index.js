@@ -13,10 +13,16 @@ var version = require( '../../package.json' ).version,
 	cors = require( 'cors' ),
 	oauth = require( './oauth' );
 
-var corsOptions = {
-	origin: 'http://teach-cms-enabled.herokuapp.com',
+var whitelist = config( 'whitelist' );
+
+let corsOptions = {
+	origin: function( origin, callback ) {
+		let originIsWhitelisted = whitelist.indexOf( origin ) !== -1;
+		callback( null, originIsWhitelisted );
+	},
 	credentials: true
 };
+
 const TOKEN_NAME = 'wpcom_token';
 const URL = 'https://public-api.wordpress.com/rest/v1.1/sites/';
 const BLOG = 'teachmozillaorg.wordpress.com';
@@ -35,7 +41,6 @@ module.exports = function() {
 		if ( req.headers.cookie ) {
 			cookies = cookie.parse( req.headers.cookie );
 		}
-
 		if ( cookies && typeof cookies[TOKEN_NAME] !== 'undefined' ) {
 			let post = req.params.post;
 			let url = `${URL}${BLOG}/posts/`;
