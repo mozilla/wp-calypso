@@ -33,3 +33,14 @@ ENABLE_FEATURES=manage/plugins/compatibility-warning DISABLE_FEATURES=code-split
 `
 
 This will generate the appropriate `client/config/index.js` file. Afterwards, when you run `make run` without setting these variables, `client/config/index.js` will regenerate according to the selected config file - making this method ideal for quickly reviewing PRs or reproducing bugs.
+
+MozConfig
+----------
+These are the required config for mozilla's wp-calypso instance
+* `whitelist: ["http://example.com"]`
+* `oauth_client_id: Integer`
+* `oauth_client_secret: String`
+* `oauth_client_redirect_url: URL`
+* `features: { oauth: true}`
+
+NOTE: `oauth` property should be enabled under `features` object.
