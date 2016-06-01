@@ -42,5 +42,17 @@ These are the required config for mozilla's wp-calypso instance
 * `oauth_client_secret: String`
 * `oauth_client_redirect_url: URL`
 * `features: { oauth: true}`
+```
+	"mofo_apps": {
+		"learning.mozilla.org": {
+			"preview": "http://example.com/previewpath",
+			"blogname": "blog.wordpress.com"
+		},
+		"science.mozilla.org": {
+			"preview": "http://foo.com/previewpath",
+			"blogname": "anotherblog.wordpress.com"
+		}
+	},
+```
 
 NOTE: `oauth` property should be enabled under `features` object.

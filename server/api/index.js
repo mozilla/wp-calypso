@@ -13,7 +13,8 @@ var version = require( '../../package.json' ).version,
 	cors = require( 'cors' ),
 	oauth = require( './oauth' );
 
-var whitelist = config( 'whitelist' );
+var mofoApps = config( 'mofo_apps' );
+let whitelist = Object.keys( mofoApps );
 
 let corsOptions = {
 	origin: function( origin, callback ) {
@@ -25,7 +26,6 @@ let corsOptions = {
 
 const TOKEN_NAME = 'wpcom_token';
 const URL = 'https://public-api.wordpress.com/rest/v1.1/sites/';
-const BLOG = 'teachmozillaorg.wordpress.com';
 
 module.exports = function() {
 	var app = express();
@@ -36,14 +36,18 @@ module.exports = function() {
 		} );
 	} );
 
-	app.get( '/proxy/:post', cors( corsOptions ), function( req, res ) {
+	app.get( '/proxy/:blogname/:post', cors( corsOptions ), function( req, res ) {
 		let cookies;
 		if ( req.headers.cookie ) {
 			cookies = cookie.parse( req.headers.cookie );
 		}
 		if ( cookies && typeof cookies[TOKEN_NAME] !== 'undefined' ) {
 			let post = req.params.post;
-			let url = `${URL}${BLOG}/posts/`;
+			let blogname = mofoApps[req.params.blogname].blogname;
+			if ( !blogname ) {
+				return res.sendStatus( 404 );
+			}
+			let url = `${URL}${blogname}/posts/`;
 			if ( isNaN( post * 1 ) ) {
 				url = `${url}slug:${post}`;
 			} else {
@@ -60,10 +64,10 @@ module.exports = function() {
 				if ( data.statusCode === 200 ) {
 					return res.json( JSON.parse( data.body ) );
 				}
-				res.send( 404 );
+				res.sendStatus( 404 );
 			} );
 		} else {
-			res.send( 403 );
+			res.sendStatus( 403 );
 		}
 	} );
 

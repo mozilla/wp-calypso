@@ -229,7 +229,7 @@ const PostEditor = React.createClass( {
 			loadingError: PostEditStore.getLoadingError(),
 			isDirty: PostEditStore.isDirty(),
 			isSaveBlocked: PostEditStore.isSaveBlocked(),
-			teachPreviewUrl: store.get( 'teachPreviewUrl' ),
+			mofoPreviewURL: store.get( 'mofoPreviewURL' ),
 			hasContent: PostEditStore.hasContent(),
 			previewUrl: PostEditStore.getPreviewUrl(),
 			post: PostEditStore.get(),
@@ -320,6 +320,7 @@ const PostEditor = React.createClass( {
 			isTrashed = this.state.post.status === 'trash';
 			hasAutosave = ( this.state.post.meta && this.state.post.meta.data && this.state.post.meta.data.autosave );
 		}
+		var current_site = site.domain;
 		return (
 			<div className="post-editor">
 				<div className="post-editor__inner">
@@ -381,6 +382,7 @@ const PostEditor = React.createClass( {
 						<EditorWordCount />
 						{ this.iframePreviewEnabled()
 							? <EditorPreview
+								mofoCurrentPreview={ current_site }
 								showPreview={ this.state.showPreview }
 								onClose={ this.onPreviewClose }
 								isSaving={ this.state.isSaving || this.state.isAutosaving }
@@ -484,10 +486,7 @@ const PostEditor = React.createClass( {
 	},
 
 	getPageType: function( callback ) {
-		var href = window.location.href;
-		var queryParam = href.split( '?' )[1];
-		var indexOfPageType = queryParam.indexOf( 'pageType=' ) + 'pageType='.length;
-		var pageType = queryParam.substr( indexOfPageType );
+		let pageType = store.get( 'mofo_page_type' ) || 'blank';
 		if ( pageType === 'blank' ) {
 			callback( '' );
 		}
@@ -630,6 +629,7 @@ const PostEditor = React.createClass( {
 		}
 
 		if ( site ) {
+			store.set( 'current_site', site.slug );
 			path = route.addSiteFragment( path, site.slug );
 		}
 
@@ -682,7 +682,6 @@ const PostEditor = React.createClass( {
 		this.setState( { isSaving: true } );
 	},
 
-
 	onTeachPreview: function() {
 		var status = 'draft',
 			previewPost;
@@ -692,12 +691,12 @@ const PostEditor = React.createClass( {
 		}
 
 		previewPost = function() {
-			if ( this._previewWindow && store.get( 'teachPreviewUrl' ) === this._teachPreviewUrl && !this._previewWindow.closed ) {
-				this._previewWindow.location = this.state.teachPreviewUrl;
+			if ( this._previewWindow && store.get( 'mofoPreviewURL' ) === this._mofoPreviewURL && !this._previewWindow.closed ) {
+				this._previewWindow.location = this.state.mofoPreviewURL;
 				this._previewWindow.focus();
 			} else {
-				this._teachPreviewUrl = store.get( 'teachPreviewUrl' );
-				this._previewWindow = window.open( store.get( 'teachPreviewUrl' ), 'WordPress.com Post Preview' );
+				this._mofoPreviewURL = store.get( 'mofoPreviewURL' );
+				this._previewWindow = window.open( store.get( 'mofoPreviewURL' ), 'WordPress.com Post Preview' );
 			}
 		}.bind( this );
 

@@ -9,6 +9,7 @@ import omit from 'lodash/omit';
 import map from 'lodash/map';
 import get from 'lodash/get';
 import mapValues from 'lodash/mapValues';
+import store from 'store';
 
 /**
  * Internal dependencies
@@ -91,17 +92,19 @@ var PublishMenu = React.createClass( {
 		];
 	},
 
-	onNavigate( postType ) {
+	onNavigate( postType, mozCustomPageType ) {
 		if ( ! includes( [ 'post', 'page' ], postType ) ) {
 			analytics.mc.bumpStat( 'calypso_publish_menu_click', postType );
 		}
-
+		if ( mozCustomPageType ) {
+			store.set( 'mofo_page_type', postType );
+		}
 		this.props.onNavigate();
 	},
 
 	renderMenuItem: function( menuItem ) {
     const { site } = this.props;
-    
+
 		if ( this.props.site.capabilities && ! this.props.site.capabilities[ menuItem.capability ] ) {
 			return null;
 		}
@@ -124,16 +127,9 @@ var PublishMenu = React.createClass( {
 		} else {
 			link = menuItem.link + this.props.siteSuffix;
 		}
-		if ( menuItem.mozCustomPageType ) {
-			link = link + '/?pageType=' + menuItem.name;
-		}
-
-		if ( menuItem.mozCustomPageType ) {
-			link = link + '/?pageType=' + menuItem.name
-		}
 
 		let preload;
-    let icon;
+		let icon;
 		if ( includes( [ 'post', 'page' ], menuItem.name ) ) {
 			preload = 'posts-pages';
 
@@ -168,7 +164,7 @@ var PublishMenu = React.createClass( {
 				className={ className }
 				link={ link }
 				buttonLink={ menuItem.buttonLink }
-				onNavigate={ this.onNavigate.bind( this, menuItem.name ) }
+				onNavigate={ this.onNavigate.bind( this, menuItem.name, menuItem.mozCustomPageType ) }
 				icon={ icon }
 				preloadSectionName={ preload }
 				mozCustomPageType={ menuItem.mozCustomPageType }
@@ -260,7 +256,7 @@ var PublishMenu = React.createClass( {
 
 		let mozmakerMenuItems = this.mozmakerParitialTypes;
 		let allMenuItems = menuItems.concat( mozmakerMenuItems );
-		
+
 		return (
 			<ul>
 				{ this.props.site && (

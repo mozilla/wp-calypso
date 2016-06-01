@@ -32,6 +32,25 @@ function anyEnabled() {
 	} );
 }
 
+function getMofoSite( siteID ) {
+	var site;
+	var mofo_apps = config( 'mofo_apps' );
+	Object.keys( mofo_apps ).every( function( app ) {
+		if ( mofo_apps[app].blogname === siteID ) {
+			site = app;
+			return false;
+		}
+		return true;
+	} );
+	return site;
+}
+
+function getPreviewURL( appname ) {
+	return config( 'mofo_apps' )[appname].preview || '';
+}
+
 module.exports = config;
 module.exports.isEnabled = isEnabled;
+module.exports.getMofoSite = getMofoSite;
+module.exports.getPreviewURL = getPreviewURL;
 module.exports.anyEnabled = anyEnabled;

@@ -28,5 +28,6 @@
   "facebook_api_key",
   "discover_blog_id",
   "support-user",
-  "sync-handler-defaults"
+  "sync-handler-defaults",
+  "mofo_apps"
 ]

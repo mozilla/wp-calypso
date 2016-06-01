@@ -4,6 +4,7 @@
 const React = require( 'react' ),
 	url = require( 'url' ),
 	querystring = require( 'querystring' ),
+	config = require( 'config' ),
 	store = require( 'store' );
 
 /**
@@ -31,10 +32,12 @@ const EditorPreview = React.createClass( {
 	},
 
 	componentDidUpdate( prevProps ) {
+		let appname = config.getMofoSite( prevProps.mofoCurrentPreview );
+		let appPreviewURL = config.getPreviewURL( appname );
+
 		if ( this.didStartSaving( prevProps, this.props ) ) {
 			this.setState( { iframeUrl: 'about:blank' } );
 		}
-
 		if ( this.props.previewUrl && (
 			this.didFinishSaving( prevProps ) ||
 			this.didLoad( prevProps ) ||
@@ -47,10 +50,10 @@ const EditorPreview = React.createClass( {
 			if ( !previewID ) {
 				previewID = this.props.postId;
 			}
-			store.set( 'teachPreviewUrl', `http://localhost:8008/preview/${previewID}` );
+			store.set( 'mofoPreviewURL', `${appPreviewURL}/preview/${previewID}` );
 			this.setState( {
 				iframeUrl: frameURL,
-				teachPreviewUrl: `http://localhost:8008/preview/${previewID}`
+				mofoPreviewURL: `${appPreviewURL}/preview/${previewID}`
 			} );
 		}
 	},

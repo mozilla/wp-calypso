@@ -4,7 +4,8 @@
 const noop = require( 'lodash/noop' ),
 	React = require( 'react' ),
 	PureRenderMixin = require( 'react-pure-render/mixin' ),
-	store = require( 'store' );
+	store = require( 'store' ),
+	config = require( 'config' );
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -323,6 +324,7 @@ const EditorGroundControl = React.createClass( {
 	},
 
 	render: function() {
+		var mofo_preview_name = config.getMofoSite( this.props.site.domain );
 		return (
 			<Card className="editor-ground-control">
 				<Site
@@ -380,7 +382,7 @@ const EditorGroundControl = React.createClass( {
 						onClick={ this.onPreviewTeachButtonClick }
 						tabIndex={ 4 }
 					>
-					Preview on Teach
+					Preview on { mofo_preview_name }
 					</button>
 					<div className="editor-ground-control__publish-combo">
 						<button
