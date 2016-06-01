@@ -50,10 +50,10 @@ const EditorPreview = React.createClass( {
 			if ( !previewID ) {
 				previewID = this.props.postId;
 			}
-			store.set( 'mofoPreviewURL', `${appPreviewURL}/preview/${previewID}` );
+			store.set( 'mofoPreviewURL', `${appPreviewURL}/${previewID}` );
 			this.setState( {
 				iframeUrl: frameURL,
-				mofoPreviewURL: `${appPreviewURL}/preview/${previewID}`
+				mofoPreviewURL: `${appPreviewURL}/${previewID}`
 			} );
 		}
 	},

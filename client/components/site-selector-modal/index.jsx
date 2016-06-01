@@ -53,7 +53,6 @@ var SiteSelectorModal = React.createClass( {
 
 	setSite: function( slug ) {
 		var site = sitesList.getSite( slug );
-
 		this.setState( { site: site } );
 	},
 

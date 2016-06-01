@@ -11,10 +11,14 @@ var version = require( '../../package.json' ).version,
 	request = require( 'request' ),
 	cookie = require( 'cookie' ),
 	cors = require( 'cors' ),
-	oauth = require( './oauth' );
+	oauth = require( './oauth' ),
+	url = require( 'url' );
 
 var mofoApps = config( 'mofo_apps' );
-let whitelist = Object.keys( mofoApps );
+let whitelist = Object.keys( mofoApps ).map( domain => {
+	var URL = url.parse( mofoApps[domain].preview );
+	return `${URL.protocol}//${URL.host}`;
+} );
 
 let corsOptions = {
 	origin: function( origin, callback ) {
