@@ -320,7 +320,10 @@ const PostEditor = React.createClass( {
 			isTrashed = this.state.post.status === 'trash';
 			hasAutosave = ( this.state.post.meta && this.state.post.meta.data && this.state.post.meta.data.autosave );
 		}
-		var current_site = site.domain;
+		let current_site;
+		if ( site ) {
+			current_site = site.domain;
+		}
 		return (
 			<div className="post-editor">
 				<div className="post-editor__inner">
@@ -914,7 +917,7 @@ const PostEditor = React.createClass( {
 	},
 
 	getEditorMode: function() {
-		var editorMode = 'tinymce'
+		var editorMode = 'tinymce';
 		if ( this.props.preferences ) {
 			if ( this.props.preferences[ 'editor-mode' ] ) {
 				editorMode = this.props.preferences[ 'editor-mode' ];
