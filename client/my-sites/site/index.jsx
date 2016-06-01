@@ -74,7 +74,6 @@ export default React.createClass( {
 		if ( this.props.homeLink ) {
 			return;
 		}
-
 		this.props.onSelect( event );
 		event.preventDefault(); // this doesn't actually do anything...
 	},
@@ -193,10 +192,10 @@ export default React.createClass( {
 	toggleActions() {
 		this.setState( { showMoreActions: ! this.state.showMoreActions } );
 	},
-	preventDefault( event ) {
-		return event.preventDefault();
-	},
-	onClick() {
+	onClick( event ) {
+		if ( this.props.homeLink ) {
+			return event.preventDefault();
+		}
 		OAuthToken.setToken( store.get( 'wpcom_token' ) );
 		return this.props.onClick();
 	},
@@ -220,19 +219,18 @@ export default React.createClass( {
 			'has-edit-capabilities': userCan( 'manage_options', site )
 		} );
 
-		let href = this.props.homeLink ? site.URL : this.props.href;
 		return (
 			<div className={ siteClass }>
 				{ ! this.state.showMoreActions
 					? <a className="site__content"
-							href={ href ? href : `/stats/insights/${site.domain}` }
+							href={ this.props.homeLink ? site.URL : this.props.href }
 							target={ this.props.externalLink && ! this.state.showMoreActions && '_blank' }
 							title={ this.props.homeLink
 								? this.translate( 'Visit "%(title)s"', { args: { title: site.title } } )
 								: site.title
 							}
-							onTouchTap={ href ? this.preventDefault : this.onSelect }
-							onClick={ href ? this.preventDefault : this.onClick }
+							onTouchTap={ this.onSelect }
+							onClick={ this.onClick }
 							onMouseEnter={ this.props.onMouseEnter }
 							onMouseLeave={ this.props.onMouseLeave }
 							aria-label={

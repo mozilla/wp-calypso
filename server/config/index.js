@@ -46,7 +46,10 @@ function getMofoSite( siteID ) {
 }
 
 function getPreviewURL( appname ) {
-	return config( 'mofo_apps' )[appname].preview || '';
+	if ( config( 'mofo_apps' )[appname] ) {
+		return config( 'mofo_apps' )[appname].preview;
+	}
+	return '';
 }
 
 module.exports = config;
