@@ -53,7 +53,10 @@ export default React.createClass( {
 
 	onSiteSelect: function( slug ) {
 		let path = this.props.path;
-		if ( path === '/sites' ) {
+		// MOFO: we have to change the logic from just doing
+		// path === '/sites' to the one below because wp-calypso
+		// will prepend blog url if only one is in your account
+		if ( path.indexOf( '/sites' ) === 0 ) {
 			path = '/stats/insights';
 		}
 		page( addSiteFragment( path, slug ) );
