@@ -75,7 +75,6 @@ export default React.createClass( {
 		if ( node ) {
 			node.scrollTop = 0;
 		}
-
 		// ignore mouse events as the default page() click event will handle navigation
 		// You'll likely wonder what's going on here. Why mouseup, and not click or touchend?
 		// The underlying thing generating the click is a my-sites/site, which is using onTouchTap

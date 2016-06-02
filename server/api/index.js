@@ -59,8 +59,8 @@ module.exports = function() {
 	} );
 
 	app.get( '/proxy/:blogname/:post', cors( corsOptions ), function( req, res ) {
-		let cookies = getToken( ( req.headers.cookie ) );
-		if ( cookies && typeof cookies[TOKEN_NAME] !== 'undefined' ) {
+		let token = getToken( req.headers.cookie );
+		if ( token ) {
 			let post = req.params.post;
 			let blogname = mofoApps[req.params.blogname].blogname;
 			if ( !blogname ) {
@@ -74,7 +74,7 @@ module.exports = function() {
 			}
 			request.get( url, {
 				auth: {
-					bearer: cookies[TOKEN_NAME]
+					bearer: token
 				}
 			}, function( err, data ) {
 				if ( err ) {
