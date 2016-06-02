@@ -12,11 +12,11 @@ var version = require( '../../package.json' ).version,
 	cookie = require( 'cookie' ),
 	cors = require( 'cors' ),
 	oauth = require( './oauth' ),
-	url = require( 'url' );
+	urlParser = require( 'url' );
 
 var mofoApps = config( 'mofo_apps' );
 let whitelist = Object.keys( mofoApps ).map( domain => {
-	var URL = url.parse( mofoApps[domain].preview );
+	var URL = urlParser.parse( mofoApps[domain].preview );
 	return `${URL.protocol}//${URL.host}`;
 } );
 
@@ -31,8 +31,26 @@ let corsOptions = {
 const TOKEN_NAME = 'wpcom_token';
 const URL = 'https://public-api.wordpress.com/rest/v1.1/sites/';
 
+function getToken( cookies ) {
+	if ( cookies ) {
+		cookies = cookie.parse( cookies );
+	}
+	if ( cookies && typeof cookies[TOKEN_NAME] !== 'undefined' ) {
+		return cookies[TOKEN_NAME];
+	}
+	return false;
+}
+
 module.exports = function() {
 	var app = express();
+
+	app.use( function( req, res, next ) {
+		let token = getToken( req.headers.cookie );
+		if ( !token && ( req.path !== '/authorize' && req.path !== '/sites' && req.path !== '/api/oauth/token' ) ) {
+			return res.redirect( '/authorize' );
+		}
+		next();
+	} );
 
 	app.get( '/version', function( req, res ) {
 		res.json( {
@@ -41,10 +59,7 @@ module.exports = function() {
 	} );
 
 	app.get( '/proxy/:blogname/:post', cors( corsOptions ), function( req, res ) {
-		let cookies;
-		if ( req.headers.cookie ) {
-			cookies = cookie.parse( req.headers.cookie );
-		}
+		let cookies = getToken( ( req.headers.cookie ) );
 		if ( cookies && typeof cookies[TOKEN_NAME] !== 'undefined' ) {
 			let post = req.params.post;
 			let blogname = mofoApps[req.params.blogname].blogname;
