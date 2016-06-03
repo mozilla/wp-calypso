@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import omit from 'lodash/omit';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import config from 'config';
 
 /**
  * Internal dependencies
@@ -109,12 +110,18 @@ const EditorTitle = React.createClass( {
 			'is-loading': ! post
 		} );
 
+		let mofoUrl = config.getMofoSite( site.slug );
+		if ( mofoUrl ) {
+			mofoUrl = `//${mofoUrl}`;
+		} else {
+			mofoUrl = post.URL;
+		}
 		return (
 			<div className={ classes }>
 				{ post && post.ID && ! PostUtils.isPage( post ) &&
 					<EditorPermalink
 						slug={ post.slug }
-						path={ isPermalinkEditable ? PostUtils.getPermalinkBasePath( post ) : post.URL }
+						path={ mofoUrl }
 						isEditable={ isPermalinkEditable } />
 				}
 				<TrackInputChanges onNewValue={ this.recordChangeStats }>
