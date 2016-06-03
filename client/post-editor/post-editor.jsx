@@ -8,6 +8,7 @@ const ReactDom = require( 'react-dom' ),
 	debounce = require( 'lodash/debounce' ),
 	throttle = require( 'lodash/throttle' ),
 	store = require( 'store' ),
+	config = require( 'config' ),
 	assign = require( 'lodash/assign' );
 import request from 'superagent';
 import { connect } from 'react-redux';
@@ -160,6 +161,11 @@ const messages = {
 
 			if ( ! site ) {
 				return i18n.translate( 'Page updated!' );
+			}
+
+			let mofoUrl = config.getMofoSite( site.slug );
+			if ( mofoUrl ) {
+				site.URL = `//${mofoUrl}`;
 			}
 
 			return i18n.translate( 'Page updated on {{siteLink/}}!', {
@@ -324,6 +330,7 @@ const PostEditor = React.createClass( {
 		if ( site ) {
 			current_site = site.domain;
 		}
+		let current_domain = `https://${config.getMofoSite( current_site )}/`;
 		return (
 			<div className="post-editor">
 				<div className="post-editor__inner">
@@ -351,7 +358,7 @@ const PostEditor = React.createClass( {
 								{ this.state.post && isPage && site
 									? <EditorPageSlug
 										slug={ this.state.post.slug }
-										path={ this.state.post.URL ? utils.getPagePath( this.state.post ) : site.URL + '/' }
+										path={ this.state.post.URL ? current_domain : current_domain }
 									/>
 									: null
 								}
@@ -901,6 +908,10 @@ const PostEditor = React.createClass( {
 		};
 
 		if ( message ) {
+			let path = config.getMofoSite( this.props.sites.selected );
+			if ( path ) {
+				link = `//${path}/${this.state.post.slug}`;
+			}
 			nextState.notice = {
 				type: 'success',
 				text: message,
