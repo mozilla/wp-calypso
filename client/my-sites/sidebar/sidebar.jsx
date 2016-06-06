@@ -209,6 +209,10 @@ module.exports = React.createClass( {
 		);
 	},
 
+	noMenu: function() {
+		return null;
+	},
+
 	menus: function() {
 		var site = this.getSelectedSite(),
 			menusLink = '/menus' + this.siteSuffix(),
@@ -674,6 +678,9 @@ module.exports = React.createClass( {
 			appearance = ( !! this.themes() || !! this.menus() ),
 			configuration = ( !! this.sharing() || !! this.users() || !! this.siteSettings() || !! this.plugins() || !! this.upgrades() ),
 			vip = !! this.vip();
+
+		appearance = config.isEnabled( 'disable/personalize' ) ? this.noMenu() : appearance;
+		configuration = config.isEnabled( 'disable/configure' ) ? this.noMenu() : configuration;
 
 		return (
 			<Sidebar>
