@@ -32,6 +32,8 @@
 		"code-splitting": true,
 		"community-translator": true,
 		"desktop-promo": true,
+		"disable/personalize": false,
+		"disable/configure": false,
 		"devdocs": true,
 		"devdocs/redirect-loggedout-homepage": true,
 		"guidestours": true,
